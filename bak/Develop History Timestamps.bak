@@ -1,0 +1,174 @@
+local LrTasks = import 'LrTasks'
+local catalog = import "LrApplication".activeCatalog()
+local ProgressScope = import 'LrProgressScope'
+local dialog = import 'LrDialogs'
+local LrView = import 'LrView'
+local plugin = _PLUGIN --LrPlugin class
+local LrPathUtils = import 'LrPathUtils'
+local LrFileUtils = import 'LrFileUtils'
+local LrStringUtils = import 'LrStringUtils'
+
+local LrLogger = import 'LrLogger'
+local myLogger = LrLogger( 'libraryLogger' )
+myLogger:enable( "logfile" ) 
+
+local tofront = ""
+
+--require "inc/db"
+
+--[[function MyHWLibraryItem.outputToLog( message )
+    myLogger:trace( message )
+end]]
+
+if WIN_ENV then
+    sqlite = LrPathUtils.child( _PLUGIN.path, 'sqlite3.exe' )
+else
+    sqlite = LrPathUtils.child( _PLUGIN.path, 'sqlite3' )
+end
+
+--
+
+--cmd = cmd .. 
+
+--LrTasks.execute(cmd)
+
+LrTasks.startAsyncTask( function()
+	local photo = catalog:getTargetPhoto() -- retrieve the active photo // returns nil if no photo selected
+    
+    --check if a photo was selected
+    if not photo then
+        return nil, dialog.message("Please select a photo", "No photo seems to be selected. Please select a photo and try again")
+    end
+
+    local photoID = photo.localIdentifier
+    local filename = photo:getFormattedMetadata ("fileName")
+        
+--    local outputFile = LrPathUtils.getStandardFilePath( 'temp' )
+    local outputFile = "c:\\temp"
+    outputFile = LrPathUtils.child( outputFile, "lr_historySteps_output.txt" )
+    outputFile = LrFileUtils.chooseUniqueFileName( outputFile )
+        
+        
+    cmd = 'cmd /c ""' .. sqlite .. '" "'.. catalog:getPath() .. '" '
+    cmd = cmd .. '"SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE \'%' .. photoID .. '%\' ORDER BY dateCreated DESC;"'
+    cmd = cmd .. " > " .. outputFile .. '"'
+--    LrTasks.execute("echo 'test' > C:\\temp\\log.txt")
+    
+    LrTasks.execute(cmd)
+        
+    -- initialize variables
+    local splitStep = {}
+    local testarr = {}
+    local historySteps = ""
+  	
+    -- check if sql output file exists
+    local outputFile = "c:\\temp\\lr_historySteps_output.txt"
+    local outputExists, outputContents = pcall( LrFileUtils.readFile, outputFile )
+    
+        
+    if outputExists then
+            outputContents = outputContents:gsub( "[%z\255\254]", "" )
+            stepDates = split(outputContents,"\n")
+            
+            for key,value in ipairs(stepDates) do
+                splitStep[key] = split(value,"|")
+                stepName = splitStep[key][1]
+                dateCreated = tonumber(splitStep[key][2]) + 978307200
+                
+                dateCreated = os.date("%x %X",dateCreated)
+--                dialog.message("Step details: " .. stepName .. "+" .. os.date("%x %X",dateCreated))
+                
+                -- check if step may already include a date, usually included in paranthesis after the step name
+                local dateExists = string.find(stepName,"%(") --returns nil if not found
+                
+                if not dateExists then
+                    historySteps = historySteps .. stepName .. " (" .. dateCreated .. ")\n"
+                else
+                    historySteps = historySteps .. stepName .. "\n" --omit the date if name includes it 
+                end
+            end
+--            testChar = string.sub(outputContents,1,3)
+--            dialog.message("First characters: " .. string.byte(testChar,1,-1) )  
+--            dialog.message("First characters: " .. testChar )  
+--            if string.find(outputContents, "^%z") then
+--              return nil, dialog.message("Looks like zero character")  
+--            else 
+--                return nil, dialog.message("Does not look like zero character")
+--            end
+--            dialog.message("YES!", "File exists! Length is: " .. #outputContents, "info")
+--            dialog.message("History Timestamps", outputContents)
+        if outputContents == "" then
+            return nil, dialog.message("Hmm...", "Output file looks empty... : " .. outputFile, "critical")
+        end
+    else
+        return nil, dialog.message("No output file", "There is no output file to read from. The catalog query"
+                .. " may have failed to create the output file: " .. outputFile, "critical" )
+    end
+
+    -- delete temp file
+    LrFileUtils.delete(outputFile)
+        
+	local f = LrView.osFactory()
+	local c = 
+		f:row{
+		bind_to_object = props,	
+			f:column { 				
+				f:edit_field { value = historySteps, width_in_chars = 40, height_in_lines = #stepDates },
+--				f:edit_field { value = catalog:getPath(), width_in_chars = 80, height_in_lines = 1 },
+--				f:edit_field { value = cmd, width_in_chars = 80, height_in_lines = 1 },
+--				f:edit_field { value = sqlite, width_in_chars = 80, height_in_lines = 1 },
+			},
+		}
+        
+    dialogValue = dialog.presentModalDialog(
+        {
+            title = "Develop History Steps for: " .. filename ,
+            contents = c,
+            save_frame = "plgDevelopHistoryTimestamps",
+        }
+    )
+end -- function()
+) --startAsyncTask
+
+-- .\sqlite3.exe "E:\Pictures\Lightroom Catalog\AIG Photography 2021.lrcat" "SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE'%45099944%';" > sql.txt
+
+
+--    dialog.message("Hello World", "Please select a photo")
+
+-- SUPPORTING FUNCTIONS
+
+function splitA( s, delim, maxItems )
+    if s == nil then return nil end
+    if s == '' then return {} end
+    local t = {}
+    local p = 1
+    repeat
+        local start, stop = s:find( delim, p, true )
+        if start then
+            t[#t + 1] = LrStringUtils.trimWhitespace( s:sub( p, start - 1 ) )
+            p = stop + 1
+            if maxItems ~= nil then
+                if #t >= maxItems - 1 then
+                    t[#t + 1] = LrStringUtils.trimWhitespace( s:sub( p ) )
+                    break
+                end
+            end
+        else
+            t[#t + 1] = LrStringUtils.trimWhitespace( s:sub( p ) )
+            break
+        end
+    until false
+    return t
+end
+
+
+-- split("a,b,c", ",") => {"a", "b", "c"}
+function split(s, sep)
+    local fields = {}
+    
+    local sep = sep or " "
+    local pattern = string.format("([^%s]+)", sep)
+    string.gsub(s, pattern, function(c) fields[#fields + 1] = c end)
+    
+    return fields
+end
