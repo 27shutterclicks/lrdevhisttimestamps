@@ -7,9 +7,13 @@ local LrPathUtils = import 'LrPathUtils'
 local LrFileUtils = import 'LrFileUtils'
 local catalog = import "LrApplication".activeCatalog()
 local LrFunctionContext = import 'LrFunctionContext'
+local LrProgressScope = import 'LrProgressScope'
 
-
-function getFromDB(sql)
+function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMessage)
+    
+    progressScopeMsg ~= nil and progressScopeMsg or "Retrieving data from catalog database" 
+    progressDialogTitle ~= nil and progressDialogTitle or "Retrieving data" 
+    progressDialogMessage ~= nil and progressDialogMessage or "Retrieving data from catalog database" 
     
     if WIN_ENV then
         sqlite = LrPathUtils.child( _PLUGIN.path, 'sqlite3.exe' )
@@ -35,7 +39,12 @@ function getFromDB(sql)
 
             -- https://community.adobe.com/t5/lightroom-classic-discussions/lrdialogs-showmodalprogressdialog-does-not-hide-on-completion/td-p/1444404
                     
-            local progressScope = dialog.showModalProgressDialog({
+            local progressScope = LrProgressScope({
+                        title = "Retrieving develop history steps timestamps",
+                        caption = "Please wait...",
+                        functionContext = context
+                        })
+            local progressDialog = dialog.showModalProgressDialog({
 
               title = 'Develop History Steps',
 

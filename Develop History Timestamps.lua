@@ -88,15 +88,13 @@ require "db"
                 local outputContents = getFromDB(sql)
                 _G.dbOutput = nil
 
-        --        local waited = waitForGlobal("waitReturn")
-
                 -- initialize variables
                 local splitStep = {}
                 local historySteps = ""
 
                 stepDates = split(outputContents,"\n")
 
-                historySteps = #stepDates .. " develop history steps found\n"
+                historySteps = #stepDates .. " develop history steps found\n ----\n"
                 for key,value in ipairs(stepDates) do
 
                     splitStep[key] = split(value,"|")
@@ -126,7 +124,11 @@ require "db"
                     view:row{
                         bind_to_object = props,	
                         view:column { 				
-                                view:edit_field { value = historySteps, width_in_chars = 40, height_in_lines = #stepDates },
+                                view:edit_field { 
+                                    value = historySteps, 
+                                    width_in_chars = 40,
+                                    height_in_lines = #stepDates < 30 and #stepDates+2 or 30
+                                },
                 --				view:edit_field { value = catalog:getPath(), width_in_chars = 80, height_in_lines = 1 },
                 --				view:edit_field { value = cmd, width_in_chars = 80, height_in_lines = 1 },
                 --				view:edit_field { value = sqlite, width_in_chars = 80, height_in_lines = 1 },
@@ -137,15 +139,16 @@ require "db"
                     {
                         title = "Develop History Steps for: " .. filename ,
                         contents = contents,
-        --                save_frame = "plgDevelopHistoryTimestamps",
-                        onShow = function(t)
-                            _G.floatingDialog = t
+--                        save_frame = "plgDevelopHistoryTimestamps",
+                        onShow = function(toFront)
+                            _G.floatingDialog = toFront
                         end
                     }
                 )
 
           end
         )
+
 
 --[[end
 )]]
