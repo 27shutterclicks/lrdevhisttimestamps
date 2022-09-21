@@ -9,11 +9,11 @@ local catalog = import "LrApplication".activeCatalog()
 local LrFunctionContext = import 'LrFunctionContext'
 local LrProgressScope = import 'LrProgressScope'
 
-function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMessage)
+function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg)
     
-    progressScopeMsg ~= nil and progressScopeMsg or "Retrieving data from catalog database" 
-    progressDialogTitle ~= nil and progressDialogTitle or "Retrieving data" 
-    progressDialogMessage ~= nil and progressDialogMessage or "Retrieving data from catalog database" 
+    progressScopeMsg = progressScopeMsg ~= nil and progressScopeMsg or "Retrieving data from catalog database" 
+    progressDialogTitle = progressDialogTitle ~= nil and progressDialogTitle or "Retrieving data" 
+    progressDialogMsg = progressDialogMsg ~= nil and progressDialogMsg or "Retrieving data from catalog database..." 
     
     if WIN_ENV then
         sqlite = LrPathUtils.child( _PLUGIN.path, 'sqlite3.exe' )
@@ -40,24 +40,23 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMes
             -- https://community.adobe.com/t5/lightroom-classic-discussions/lrdialogs-showmodalprogressdialog-does-not-hide-on-completion/td-p/1444404
                     
             local progressScope = LrProgressScope({
-                        title = "Retrieving develop history steps timestamps",
-                        caption = "Please wait...",
-                        functionContext = context
-                        })
+                    title = progressScopeMsg,
+                    caption = "Please wait...",
+                    functionContext = context
+                        }
+                    )
+                    
             local progressDialog = dialog.showModalProgressDialog({
-
-              title = 'Develop History Steps',
-
-              caption = 'Retrieving data from the catalog... please wait',
-
-              cannotCancel = true,
-
-              functionContext = context,
-
-            })
+                      title = progressDialogTitle,
+                      caption = progressDialogMsg,
+                      cannotCancel = true,
+                      functionContext = context,
+                        }
+                    )
 
             progressScope:setPortionComplete(0.0, 1.0)
                     
+            -- execute the sql
             LrTasks.execute(cmd)
 
             progressScope:done()

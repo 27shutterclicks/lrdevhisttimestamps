@@ -29,7 +29,7 @@ LrTasks.startAsyncTask( function()
     local sql = 'SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE \'%' .. photoID .. '%\' ORDER BY dateCreated DESC LIMIT 1;'
 
     
-    local outputContents = getFromDB(sql, "Retrieving last edited time", "Last Edited Time", "Retrieving last edited for the selected photo...")
+    local outputContents = getFromDB(sql, "Retrieving last edited time", "Last Edited Time", "Retrieving last edited time for the selected photo...")
 
     -- initialize variables
     local splitStep = {}
@@ -38,7 +38,8 @@ LrTasks.startAsyncTask( function()
     lastEdited = splitStep[2]
     lastEdited = tonumber(lastEdited) + 978307200
 
-    lastEdited = os.date("%A, %B %d, %Y %X",lastEdited)
+--    lastEdited = os.date("%A, %B %d, %Y %X",lastEdited)
+    lastEdited = timeStampToDate(lastEdited,"%A, %B %d, %Y %X")
     
     dialog.message( lastEdited, "Last edit time for: " .. filename)
 	

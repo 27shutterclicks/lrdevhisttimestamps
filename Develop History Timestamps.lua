@@ -94,23 +94,37 @@ require "db"
 
                 stepDates = split(outputContents,"\n")
 
-                historySteps = #stepDates .. " develop history steps found\n ----\n"
+                historySteps = #stepDates .. " develop history steps found\n"
+                    
+                local lastEditStep = split(stepDates[1],"|")
+        
+                local firstEditStep = split(stepDates[#stepDates],"|")
+        
+                historySteps = historySteps .. "-----------------------\n"
+                historySteps = historySteps .. "Image last edited: " .. timeStampToDate(lastEditStep[2]) .. "\n"
+                historySteps = historySteps .. "Image first imported: " .. timeStampToDate(firstEditStep[2]) .. "\n"
+                historySteps = historySteps .. "-----------------------\n"
+        
+                local stepNo = #stepDates
+        
                 for key,value in ipairs(stepDates) do
 
                     splitStep[key] = split(value,"|")
-                    stepName = splitStep[key][1]
-                    dateCreated = tonumber(splitStep[key][2]) + 978307200
+                    stepName = "Step " .. stepNo .. ": " .. splitStep[key][1]
+                    stepDate = tonumber(splitStep[key][2]) + 978307200
 
-                    dateCreated = os.date("%x %X",dateCreated)
+                    stepDate = os.date("%x %X",stepDate)
 
                     -- check if step may already include a date, usually included in paranthesis after the step name
                     local dateExists = string.find(stepName,"%(") --returns nil if not found
 
                     if not dateExists then
-                        historySteps = historySteps .. stepName .. " (" .. dateCreated .. ")\n"
+                        historySteps = historySteps .. stepName .. " (" .. stepDate .. ")\n"
                     else
                         historySteps = historySteps .. stepName .. "\n" --omit the date if name includes it 
                     end
+            
+                    stepNo = stepNo - 1
                 end
 
                 if outputContents == "" then
@@ -126,7 +140,7 @@ require "db"
                         view:column { 				
                                 view:edit_field { 
                                     value = historySteps, 
-                                    width_in_chars = 40,
+                                    width_in_chars = 50,
                                     height_in_lines = #stepDates < 30 and #stepDates+2 or 30
                                 },
                 --				view:edit_field { value = catalog:getPath(), width_in_chars = 80, height_in_lines = 1 },
@@ -139,9 +153,9 @@ require "db"
                     {
                         title = "Develop History Steps for: " .. filename ,
                         contents = contents,
---                        save_frame = "plgDevelopHistoryTimestamps",
-                        onShow = function(toFront)
-                            _G.floatingDialog = toFront
+                        save_frame = "plgDevelopHistoryStepTimestamps",
+                        onShow = function(t)
+                            _G.floatingDialog = t
                         end
                     }
                 )

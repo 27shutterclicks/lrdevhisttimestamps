@@ -39,3 +39,15 @@ function waitForGlobal(globalName, timeout)
     return _G[globalName] ~= nil and sleepTimer or false
 
 end
+
+
+--  Function to convert the dateCreated timestamp from Lr catalog DB to date
+
+function timeStampToDate(dateCreated,dateFormat)
+    
+    dateCreated = tonumber(dateCreated) + 978307200
+    
+    return dateFormat ~= nil and os.date(dateFormat,dateCreated) or os.date("%x %X",dateCreated)
+    
+    
+end
