@@ -23,8 +23,8 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
     
     local dbOutput = false
     
-    --    local outputFile = LrPathUtils.getStandardFilePath( 'temp' )
-    local outputFile = "c:\\temp"
+    local outputFile = LrPathUtils.getStandardFilePath( 'temp' )
+--    local outputFile = "c:\\temp"
     outputFile = LrPathUtils.child( outputFile, "lr_getfromdb_output.txt" )
     outputFile = LrFileUtils.chooseUniqueFileName( outputFile )
 
