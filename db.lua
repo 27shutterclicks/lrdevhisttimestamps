@@ -107,7 +107,8 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
 --    dialog.message("outside lrtask:  " .. outputContents)
 
 --    _G.waitReturn = true
-    
+    _G.dbOutput = nil -- reset output flag so that waitForGlobal works on next call
+
     return outputContents
 end --getFromDB
 

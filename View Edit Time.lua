@@ -34,7 +34,7 @@ LrTasks.startAsyncTask( function()
     local sql = 'SELECT changedAtTime,localTimeOffsetSecs FROM main.AgLibraryImageChangeCounter WHERE image LIKE \'%' .. photoID .. '%\';'
     
     local outputContents = getFromDB(sql, "Retrieving Image Edit Time", "Latest Edit Time", "Retrieving last edited time for the selected photo...")
-
+        
     outputContents = split(outputContents,"|")
     
     local changedTime = outputContents[1]
