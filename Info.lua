@@ -8,9 +8,21 @@ return {
 	LrPluginInfoUrl = "http://www.27shutterclicks.com",
 	
 	LrLibraryMenuItems = {
-		title = 'Develop History Timestamps',
-		file = 'Develop History Timestamps.lua',
-		enabledWhen = 'photosAvailable',
+        {
+            title = 'View Develop &History Timestamps',
+            file = 'Develop History Timestamps.lua',
+            enabledWhen = 'photosAvailable',
+        },
+        {
+            title = 'View Last &Develop Time',
+            file = 'View Last Develop Time.lua',
+            enabledWhen = 'photosAvailable',
+        },
+        {
+            title = '&View Edit Time',
+            file = 'View Edit Time.lua',
+            enabledWhen = 'photosAvailable',
+        },
 	},
     
     LrExportMenuItems = {
@@ -20,7 +32,7 @@ return {
             enabledWhen = 'photosAvailable',
         },
         {
-            title = 'View Develop &Last Edited Time',
+            title = 'View Last &Develop Time',
             file = 'View Last Develop Time.lua',
             enabledWhen = 'photosAvailable',
         },
