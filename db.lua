@@ -27,6 +27,7 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
     else
 --        sqlite = LrPathUtils.child( _PLUGIN.path, 'sqlite3' )
         sqlite = 'sqlite3 '
+        cmdStart = sqlite .. " "
     end
     
     local dbOutput = false
