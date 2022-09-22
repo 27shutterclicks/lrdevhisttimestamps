@@ -2,9 +2,9 @@ return {
 
 	LrSdkVersion = 3.0,
 	LrSdkMinimumVersion = 2.0,
-	LrToolkitIdentifier = 'com.lightroom.sdk.history.develophistorytimestamps',
+	LrToolkitIdentifier = 'com.27shutterclicks.develophistorytimestamps',
 
-	LrPluginName = LOC "$$$/DevelopHistory/PluginName=Develop History Timestamps",
+	LrPluginName = "Develop History Timestamps",
 	LrPluginInfoUrl = "http://www.27shutterclicks.com",
 	
 	LrLibraryMenuItems = {
@@ -44,8 +44,8 @@ return {
     },
 	
 	-- Add the entry for the Plug-in Manager Dialog
---	LrPluginInfoProvider = 'PluginInfoProvider.lua',
+	LrPluginInfoProvider = 'PluginInfoProvider.lua',
 	
-	VERSION = { major=0, minor=5, revision=0, },
+	VERSION = { major=0, minor=8, revision=0, },
 
 }

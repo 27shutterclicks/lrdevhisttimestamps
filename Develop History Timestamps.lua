@@ -117,6 +117,3 @@ LrTasks.startAsyncTask( function()
 
   end
 )
-
-
--- .\sqlite3.exe "E:\Pictures\Lightroom Catalog\AIG Photography 2021.lrcat" "SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE'%45099944%';" > sql.txt

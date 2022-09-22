@@ -9,30 +9,38 @@ local catalog = import "LrApplication".activeCatalog()
 local LrFunctionContext = import 'LrFunctionContext'
 local LrProgressScope = import 'LrProgressScope'
 
+-- TODO: maybe move this inside func.lua for less file clutter
 function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg)
     
     progressScopeMsg = progressScopeMsg ~= nil and progressScopeMsg or "Retrieving data from catalog database" 
     progressDialogTitle = progressDialogTitle ~= nil and progressDialogTitle or "Retrieving data" 
     progressDialogMsg = progressDialogMsg ~= nil and progressDialogMsg or "Retrieving data from catalog database..." 
     
+    local cmd = ""
+    local cmdStart = "" -- to hold beginning of shell command which may differ on win/mac
+    local cmdEnd = "" -- to hold end of shell command which may differ on win/mac
+    
     if WIN_ENV then
         sqlite = LrPathUtils.child( _PLUGIN.path, 'sqlite3.exe' )
+        cmdStart = 'cmd /c ""' .. sqlite .. '" '
+        cmdEnd = '"'
     else
-        sqlite = LrPathUtils.child( _PLUGIN.path, 'sqlite3' )
+--        sqlite = LrPathUtils.child( _PLUGIN.path, 'sqlite3' )
+        sqlite = 'sqlite3 '
     end
     
     local dbOutput = false
     
     local outputFile = LrPathUtils.getStandardFilePath( 'temp' )
---    local outputFile = "c:\\temp"
+    --    local outputFile = "c:\\temp" -- NOTE: Used for simpler testing
     outputFile = LrPathUtils.child( outputFile, "lr_getfromdb_output.txt" )
     outputFile = LrFileUtils.chooseUniqueFileName( outputFile )
 
-    cmd = 'cmd /c ""' .. sqlite .. '" "'.. catalog:getPath() .. '" '
-    cmd = 'cmd /c ""' .. sqlite .. '" "'.. catalog:getPath() .. '" '
-    cmd = cmd .. '"' .. sql .. '"'
-    cmd = cmd .. " > " .. outputFile .. '"'
-
+    -- .\sqlite3.exe "E:\Pictures\Lightroom Catalog\AIG Photography 2021.lrcat" "SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE'%45099944%';" > sql.txt
+    
+    cmd = cmdStart .. '"' .. catalog:getPath() .. '" "' .. sql .. '"'
+    cmd = cmd .. " > " .. outputFile .. cmdEnd
+    
     LrTasks.startAsyncTask( function()
 
         LrFunctionContext.callWithContext('function', function(context)
