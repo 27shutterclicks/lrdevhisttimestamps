@@ -15,13 +15,18 @@ return {
     
     LrExportMenuItems = {
         {
-            title = 'Develop &History Timestamps',
+            title = 'View Develop &History Timestamps',
             file = 'Develop History Timestamps.lua',
             enabledWhen = 'photosAvailable',
         },
         {
-            title = 'Develop &Last Edited Time',
-            file = 'Develop Last Edited.lua',
+            title = 'View Develop &Last Edited Time',
+            file = 'View Last Develop Time.lua',
+            enabledWhen = 'photosAvailable',
+        },
+        {
+            title = '&View Edit Time',
+            file = 'View Edit Time.lua',
             enabledWhen = 'photosAvailable',
         },
     },

@@ -47,7 +47,24 @@ function timeStampToDate(dateCreated,dateFormat)
     
     dateCreated = tonumber(dateCreated) + 978307200
     
-    return dateFormat ~= nil and os.date(dateFormat,dateCreated) or os.date("%x %X",dateCreated)
+    return dateFormat ~= nil and os.date(dateFormat,dateCreated) or os.date("%x %I\:%M\:%S %p",dateCreated)
+    
+    
+end
+
+-- function to take an ISO-8601 formatted date (like: "2022-09-20T03:53:32.765Z") as parameter with an option date format string and return either a formatted date or a timestamp in seconds. 
+
+function fromISODate(stringDate, format)  
+    
+    local inYear, inMonth, inDay, inHour, inMinute, inSecond, inZone = string.match(stringDate, '^(%d%d%d%d)-(%d%d)-(%d%d)T(%d%d):(%d%d):(%d%d)(.-)$')
+
+    --	local zHours, zMinutes = string.match(inZone, '^(.-):(%d%d)$')
+	
+    --        dialog.message("Year: " .. inYear .. " Month: " .. inMonth .. " Day: " .. inDay .. " Hour: " .. inHour .. " Min: " .. inMinute .. " Sec: " .. inSecond)
+
+	local time = os.time({year=inYear, month=inMonth, day=inDay, hour=inHour, min=inMinute, sec=inSecond, isdst=false})
+    
+    return format ~= nil and os.date(format,time) or time
     
     
 end

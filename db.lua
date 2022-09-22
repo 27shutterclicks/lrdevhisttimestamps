@@ -29,6 +29,7 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
     outputFile = LrFileUtils.chooseUniqueFileName( outputFile )
 
     cmd = 'cmd /c ""' .. sqlite .. '" "'.. catalog:getPath() .. '" '
+    cmd = 'cmd /c ""' .. sqlite .. '" "'.. catalog:getPath() .. '" '
     cmd = cmd .. '"' .. sql .. '"'
     cmd = cmd .. " > " .. outputFile .. '"'
 
@@ -39,14 +40,14 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
 
             -- https://community.adobe.com/t5/lightroom-classic-discussions/lrdialogs-showmodalprogressdialog-does-not-hide-on-completion/td-p/1444404
                     
-            local progressScope = LrProgressScope({
+            local progressTask = LrProgressScope({
                     title = progressScopeMsg,
                     caption = "Please wait...",
                     functionContext = context
                         }
                     )
                     
-            local progressDialog = dialog.showModalProgressDialog({
+            local progressScope = dialog.showModalProgressDialog({
                       title = progressDialogTitle,
                       caption = progressDialogMsg,
                       cannotCancel = true,
@@ -54,10 +55,14 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
                         }
                     )
 
-            progressScope:setPortionComplete(0.0, 1.0)
+            progressScope:setPortionComplete(0.2, 1)
+            progressScope:setPortionComplete(0.5, 1)
+            progressScope:setPortionComplete(0.8, 1)
                     
             -- execute the sql
             LrTasks.execute(cmd)
+                    
+            progressScope:setPortionComplete(0.9, 1)
 
             progressScope:done()
 
