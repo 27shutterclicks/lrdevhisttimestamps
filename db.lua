@@ -112,5 +112,3 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
 
     return outputContents
 end --getFromDB
-
---return DB
