@@ -30,7 +30,7 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
     end
     
     -- initialize db output flag
-    local dbOutput = false
+    _G.dbOutput = nil
     
     -- build the temp output file name and path
     local outputFilePath = LrPathUtils.getStandardFilePath( 'temp' )
