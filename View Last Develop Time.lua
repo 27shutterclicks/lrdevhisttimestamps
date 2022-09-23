@@ -30,8 +30,6 @@ LrTasks.startAsyncTask( function()
         
     local filename = photo:getFormattedMetadata ("fileName")
 
-    
-
     local sql = 'SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE \'%' .. photoID .. '%\' ORDER BY dateCreated DESC LIMIT 1;'
 
     
@@ -45,11 +43,9 @@ LrTasks.startAsyncTask( function()
 --    lastEdited = tonumber(lastEdited) + 978307200
 
 --    lastEdited = os.date("%A, %B %d, %Y %X",lastEdited)
-    lastEdited = timeStampToDate(lastEdited,"%A, %B %d, %Y %X")
+    lastEdited = timeStampToDate(lastEdited,"%A, %B %d, %Y %I\:%M\:%S %p")
     
     dialog.message( lastEdited, "Latest develop time for: " .. filename)
 	
 end -- function()
 ) --startAsyncTask
-
--- .\sqlite3.exe "E:\Pictures\Lightroom Catalog\AIG Photography 2021.lrcat" "SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE'%45099944%';" > sql.txt

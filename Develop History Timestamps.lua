@@ -29,8 +29,6 @@ dialog.messageWithDoNotShow({
     })
 
 _G["floatingDialog"] = {}
-_G.waitReturn = false
-
 
 LrTasks.startAsyncTask( function()
 
@@ -39,7 +37,6 @@ LrTasks.startAsyncTask( function()
         local sql = 'SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE \'%' .. photoID .. '%\' ORDER BY dateCreated DESC;'
 
         local outputContents = getFromDB(sql)
-        _G.dbOutput = nil
 
         -- initialize variables
         local splitStep = {}
@@ -66,7 +63,6 @@ LrTasks.startAsyncTask( function()
 
             splitStep[key] = split(value,"|")
             stepName = "Step " .. stepNo .. ": " .. splitStep[key][1]
---                    stepDate = tonumber(splitStep[key][2]) + 978307200
 
             stepDate = timeStampToDate(splitStep[key][2])
 
@@ -88,7 +84,6 @@ LrTasks.startAsyncTask( function()
 
 
         local view = LrView.osFactory()
---                local props = 
         local contents = 
             view:row{
                 bind_to_object = props,	
@@ -98,9 +93,6 @@ LrTasks.startAsyncTask( function()
                             width_in_chars = 50,
                             height_in_lines = #stepDates < 50 and #stepDates+5 or 50
                         },
-        --				view:edit_field { value = catalog:getPath(), width_in_chars = 80, height_in_lines = 1 },
-        --				view:edit_field { value = cmd, width_in_chars = 80, height_in_lines = 1 },
-        --				view:edit_field { value = sqlite, width_in_chars = 80, height_in_lines = 1 },
                 },
             }
 
@@ -108,7 +100,7 @@ LrTasks.startAsyncTask( function()
             {
                 title = "Develop History Steps for: " .. filename ,
                 contents = contents,
---                        save_frame = "plgDevelopHistoryStepTimestamps",
+                -- save_frame = "plgDevelopHistoryStepTimestamps",
                 onShow = function(t)
                     _G.floatingDialog = t
                 end
