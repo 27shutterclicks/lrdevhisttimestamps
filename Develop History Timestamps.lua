@@ -12,36 +12,51 @@ local LrBinding = import 'LrBinding'
 
 require "func"
 require "db"
-    
-local photo = catalog:getTargetPhoto() -- retrieve the active photo // returns nil if no photo selected
+
+-- retrieve the active photo // returns nil if no photo selected
+local photo = catalog:getTargetPhoto() 
 
 --check if a photo was selected
 if not photo then
     return nil, dialog.message("Please select a photo", "No photo seems to be selected. Please select a photo and try again")
 end
 
+-- get photo id used in catalog
 local photoID = photo.localIdentifier
 
+-- show initial message
 dialog.messageWithDoNotShow({
-        message = "The Develop History Timestamps retrieves the date and time of all Develop History steps of an image in a floating window.\n\nYou may open multiple Develop History Steps windows by leaving the window open and getting the timestamps for other images.",
+        message = "View Develop History Timestamps retrieves the date and time of all Develop History steps of an image in a floating window.\n\nYou may open multiple Develop History Steps windows by leaving the window open and getting the timestamps for other images.",
         info = "Tip: Click inside the window and drag down to see all entries or use Ctrl/Cmd + A to select all for copying and pasting elsewhere.",
         actionPrefKey = "plgDevelopHistoryTimestampsMsg"
     })
 
+-- initialize global variable for floating dialog toFront() function
 _G["floatingDialog"] = {}
 
+-- begin task
 LrTasks.startAsyncTask( function()
 
+        -- get the photo filename to show in dialog box
         local filename = photo:getFormattedMetadata ("fileName")
 
+        -- prepare the SQL statement
         local sql = 'SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE \'%' .. photoID .. '%\' ORDER BY dateCreated DESC;'
 
-        local outputContents = getFromDB(sql)
+        -- call function to query the catalog/database
+        local outputContents, msg = getFromDB(sql)
 
+        --check if output received, if not show error
+        if outputContents == nil then
+            dialog.message("There was an error", msg, "critical")
+            return nil
+        end
+        
         -- initialize variables
         local splitStep = {}
         local historySteps = ""
 
+        -- split/explode the db output by line break
         stepDates = split(outputContents,"\n")
 
         local showingText = #stepDates < 50 and "Showing all" or "Showing last 50, click and drag down for all"
@@ -78,15 +93,11 @@ LrTasks.startAsyncTask( function()
             stepNo = stepNo - 1
         end
 
-        if outputContents == "" then
-            return nil, dialog.message("Hmm...", "Output file looks empty. ", "critical")
-        end
-
-
+        -- build the dialog box view
         local view = LrView.osFactory()
         local contents = 
             view:row{
-                bind_to_object = props,	
+                bind_to_object = props,	-- not currently in use
                 view:column { 				
                         view:edit_field { 
                             value = historySteps, 
@@ -96,6 +107,7 @@ LrTasks.startAsyncTask( function()
                 },
             }
 
+        --show floating dialog
         local dialog = dialog.presentFloatingDialog(_PLUGIN,
             {
                 title = "Develop History Steps for: " .. filename ,
@@ -108,4 +120,5 @@ LrTasks.startAsyncTask( function()
         )
 
   end
+
 )

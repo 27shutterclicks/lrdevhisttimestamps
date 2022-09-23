@@ -2,10 +2,12 @@ return {
 
 	LrSdkVersion = 3.0,
 	LrSdkMinimumVersion = 2.0,
-	LrToolkitIdentifier = 'com.27shutterclicks.develophistorytimestamps',
+	LrToolkitIdentifier = 'com.27shutterclicks.lr.develophistorytimestamps',
 
 	LrPluginName = "Develop History Timestamps",
-	LrPluginInfoUrl = "http://www.27shutterclicks.com",
+	LrPluginInfoUrl = "https://www.27shutterclicks.com",
+    
+    LrInitPlugin = 'PluginInit.lua',
 	
 	LrLibraryMenuItems = {
         {
@@ -46,6 +48,6 @@ return {
 	-- Add the entry for the Plug-in Manager Dialog
 	LrPluginInfoProvider = 'PluginInfoProvider.lua',
 	
-	VERSION = { major=0, minor=8, revision=0, },
+	VERSION = { major=0, minor=8, revision=5, },
 
 }
