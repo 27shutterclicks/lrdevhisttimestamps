@@ -1,3 +1,12 @@
+--[[----------------------------------------------------------------------------
+
+Develop History Timestamps - View Last Develop Time
+
+Copyright 2022, Andrei I. Gere - www.27shutterclicks.com
+
+Created: 09/2022
+------------------------------------------------------------------------------]]
+
 local LrTasks = import 'LrTasks'
 local catalog = import "LrApplication".activeCatalog()
 local ProgressScope = import 'LrProgressScope'
@@ -8,8 +17,8 @@ local LrPathUtils = import 'LrPathUtils'
 local LrFileUtils = import 'LrFileUtils'
 local LrStringUtils = import 'LrStringUtils'
 
-require "db"
-require "func"
+require "Database"
+require "Utility"
 
 -- retrieve the active photo // returns nil if no photo selected
 local photo = catalog:getTargetPhoto() 
@@ -60,7 +69,7 @@ LrTasks.startAsyncTask( function()
         lastEdited = timeStampToDate(lastEdited,"%A, %B %d, %Y %I\:%M\:%S %p")
 
         -- show output
-        dialog.message( lastEdited, "Latest develop time for: " .. filename)
+        dialog.message( lastEdited, "Latest develop time for: " .. filename, "info")
 
     end -- function()
 ) --startAsyncTask
