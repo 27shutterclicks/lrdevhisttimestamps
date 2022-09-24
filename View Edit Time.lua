@@ -1,3 +1,12 @@
+--[[----------------------------------------------------------------------------
+
+Develop History Timestamps - View Edit Time
+
+Copyright 2022, Andrei I. Gere - www.27shutterclicks.com
+
+Created: 09/2022
+------------------------------------------------------------------------------]]
+
 local LrTasks = import 'LrTasks'
 local catalog = import "LrApplication".activeCatalog()
 local ProgressScope = import 'LrProgressScope'
@@ -10,8 +19,8 @@ local LrStringUtils = import 'LrStringUtils'
 local LrDate = import 'LrDate'
 
 -- include files
-require "db"
-require "func"
+require "Database"
+require "Utility"
 
 -- retrieve the active photo // returns nil if no photo selected
 local photo = catalog:getTargetPhoto()

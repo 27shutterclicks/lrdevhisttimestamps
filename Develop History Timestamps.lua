@@ -10,15 +10,16 @@ local LrStringUtils = import 'LrStringUtils'
 local LrFunctionContext = import 'LrFunctionContext'
 local LrBinding = import 'LrBinding'
 
-require "func"
-require "db"
+-- include files
+require "Database"
+require "Utility"
 
 -- retrieve the active photo // returns nil if no photo selected
 local photo = catalog:getTargetPhoto() 
 
 --check if a photo was selected
 if not photo then
-    return nil, dialog.message("Please select a photo", "No photo seems to be selected. Please select a photo and try again")
+    return nil, dialog.message("Please select a photo", "No photo seems to be selected. Please select a photo and try again.")
 end
 
 -- get photo id used in catalog
@@ -56,40 +57,51 @@ LrTasks.startAsyncTask( function()
         local splitStep = {}
         local historySteps = ""
 
-        -- split/explode the db output by line break
+        -- split (explode to array) the db output string by line break
         stepDates = split(outputContents,"\n")
 
         local showingText = #stepDates < 50 and "Showing all" or "Showing last 50, click and drag down for all"
 
         historySteps = #stepDates .. " develop history steps found (" .. showingText .. ")\n"
 
+        -- save most recent history step (last develop step) to variable
         local lastEditStep = split(stepDates[1],"|")
-
+        
+        -- save oldest history step (first import/copy creation) to variable
         local firstEditStep = split(stepDates[#stepDates],"|")
 
+        -- build history steps output
         historySteps = historySteps .. "-----------------------\n"
         historySteps = historySteps .. "Image last edited: " .. timeStampToDate(lastEditStep[2]) .. "\n"
         historySteps = historySteps .. "Image first imported: " .. timeStampToDate(firstEditStep[2]) .. "\n"
         historySteps = historySteps .. "-----------------------\n"
 
+        -- save number of history steps to variable
         local stepNo = #stepDates
 
+        -- loop through history steps and build output
         for key,value in ipairs(stepDates) do
 
+            -- split step by separator (e.g.: Update Radial Gradient 1|685337266.640549 )
             splitStep[key] = split(value,"|")
+            
+            -- add the step number before the step name
             stepName = "Step " .. stepNo .. ": " .. splitStep[key][1]
-
-            stepDate = timeStampToDate(splitStep[key][2])
 
             -- check if step may already include a date, usually included in paranthesis after the step name
             local dateExists = string.find(stepName,"%(") --returns nil if not found
+            
+            -- save the step timestamp to variable
+            stepDate = timeStampToDate(splitStep[key][2])
 
+            -- build output with or without including the timestamp
             if not dateExists then
                 historySteps = historySteps .. stepName .. " (" .. stepDate .. ")\n"
             else
                 historySteps = historySteps .. stepName .. "\n" --omit the date if name includes it 
             end
 
+            -- decrease step number variable
             stepNo = stepNo - 1
         end
 
@@ -103,9 +115,9 @@ LrTasks.startAsyncTask( function()
                             value = historySteps, 
                             width_in_chars = 50,
                             height_in_lines = #stepDates < 50 and #stepDates+5 or 50
-                        },
-                },
-            }
+                        }, -- edit_field
+                }, -- column
+            } -- row
 
         --show floating dialog
         local dialog = dialog.presentFloatingDialog(_PLUGIN,
@@ -118,7 +130,5 @@ LrTasks.startAsyncTask( function()
                 end
             }
         )
-
-  end
-
-)
+  end -- startasynctask function
+) -- startasynctask

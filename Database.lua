@@ -1,3 +1,12 @@
+--[[----------------------------------------------------------------------------
+
+Database Querying
+
+Copyright 2022, Andrei I. Gere - www.27shutterclicks.com
+
+Created: 09/2022
+------------------------------------------------------------------------------]]
+
 local LrTasks = import 'LrTasks'
 local dialog = import 'LrDialogs'
 local plugin = _PLUGIN --LrPlugin class
@@ -7,13 +16,19 @@ local catalog = import "LrApplication".activeCatalog()
 local LrFunctionContext = import 'LrFunctionContext'
 local LrProgressScope = import 'LrProgressScope'
 
--- TODO: maybe move this inside func.lua for less file clutter
+-- Main function for executing sql queries on the Ligthroom catalog
+-- Accepts a prepared SQL query as first parameter and optional progress messages parameters
+-- Reads contents of temp output file created by shell command, if any
+-- Returns output as string on successful read, or nil and message otherwise
+
 function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg)
     
+    -- set parameter defaults
     progressScopeMsg = progressScopeMsg ~= nil and progressScopeMsg or "Retrieving data from catalog database" 
     progressDialogTitle = progressDialogTitle ~= nil and progressDialogTitle or "Retrieving data" 
     progressDialogMsg = progressDialogMsg ~= nil and progressDialogMsg or "Retrieving data from catalog database..." 
     
+    -- initialize command variables
     local cmd = ""
     local cmdStart = "" -- to hold beginning of shell command which may differ on win/mac
     local cmdEnd = "" -- to hold end of shell command which may differ on win/mac
@@ -41,6 +56,7 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
         -- sample working command in Windows 10
     -- .\sqlite3.exe "E:\Pictures\Lightroom Catalog\My Catalog.lrcat" "SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE'%45099944%';" > sql.txt
     
+    -- assemble shell command (see example above)
     cmd = cmdStart .. '"' .. catalog:getPath() .. '" "' .. sql .. '"'
     cmd = cmd .. " > " .. outputFile .. cmdEnd
     
@@ -50,7 +66,7 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
             -- call with context required for progress dialog
             LrFunctionContext.callWithContext('function', function(context)
 
-                        -- https://community.adobe.com/t5/lightroom-classic-discussions/lrdialogs-showmodalprogressdialog-does-not-hide-on-completion/td-p/1444404
+                        -- ref: https://community.adobe.com/t5/lightroom-classic-discussions/lrdialogs-showmodalprogressdialog-does-not-hide-on-completion/td-p/1444404
                     
                     -- show progress bar in Lightroom's progress area at the top-left of the catalog window
                     local progressTask = LrProgressScope({
@@ -92,15 +108,18 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
             end -- startAsyncTask function()
     ) -- startAsyncTask
 
-    local timeout = 10; --it's rare that the query would need more than 10 seconds to complete
+    local timeout = 15; --it's rare that the query would need more time to complete
 
     -- wait for sql query complete output flag before continuing
     local timeWaited = waitForGlobal('dbOutput', timeout);
 
+    -- check if timeout reached and return message if so
+    if timeWaited == nil then
+       return nil, "The SQL timeout limit of " .. timeout .. " seconds has been reached. Querying the catalog took too long." 
+    end
+    
     -- reset output flag so that waitForGlobal works on next call
     _G.dbOutput = nil 
-    
-        -- TODO: Maybe add check for timeout and display message if reached
     
     -- read sql temp output file
     local outputExists, outputContents = pcall( LrFileUtils.readFile, outputFile )
