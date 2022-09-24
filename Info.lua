@@ -48,6 +48,6 @@ return {
 	-- Add the entry for the Plug-in Manager Dialog
 	LrPluginInfoProvider = 'PluginInfoProvider.lua',
 	
-	VERSION = { major=0, minor=8, revision=5, },
+	VERSION = { major=0, minor=9, revision=0, },
 
 }

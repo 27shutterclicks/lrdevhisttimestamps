@@ -1,4 +1,13 @@
+--[[----------------------------------------------------------------------------
+
+Utility functions
+
+------------------------------------------------------------------------------]]
+
+-- ref: https://stackoverflow.com/a/40180465/10792097
+
 -- split("a,b,c", ",") => {"a", "b", "c"}
+
 function split(s, sep)
     local fields = {}
     
@@ -18,7 +27,7 @@ end
 
 -- if the timeout was reached and the variable name still didn't exist.
 
--- https://community.adobe.com/t5/lightroom-classic-discussions/many-sdk-methods-yield-preventing-robust-plugins/m-p/8432135#M164219
+-- ref: https://community.adobe.com/t5/lightroom-classic-discussions/many-sdk-methods-yield-preventing-robust-plugins/m-p/8432135#M164219
 
 function waitForGlobal(globalName, timeout)
 
@@ -52,7 +61,7 @@ function timeStampToDate(dateCreated,dateFormat)
     
 end
 
--- function to take an ISO-8601 formatted date (like: "2022-09-20T03:53:32.765Z") as parameter with an option date format string and return either a formatted date or a timestamp in seconds. 
+-- Function to take an ISO-8601 formatted date (e.g.: "2022-09-20T03:53:32.765Z") as parameter with an option date format string and return either a formatted date or a timestamp in seconds. 
 
 function fromISODate(stringDate, format)  
     
