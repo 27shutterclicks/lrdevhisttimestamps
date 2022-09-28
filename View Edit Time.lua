@@ -65,6 +65,9 @@ LrTasks.startAsyncTask( function()
         local changedTime = outputContents[1]
         local timeOffset = tonumber(outputContents[2]) --returned in seconds from db
 
+        -- account for time offset possibly being nil (not existing in db)
+        timeOffset = timeOffset ~= nil and timeOffset or 0 -- if nil set it to zero
+        
         -- parse ISO timestamp to seconds and adjust timezone offset
         changedTime = fromISODate(changedTime) + timeOffset
         
