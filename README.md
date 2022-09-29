@@ -46,7 +46,7 @@ The plugin adds three new options to File > Plug-in Extras and Library > Plug-in
 - View Last Develop Time
 - View Edit Time
 
-To use, select a photo and then select one of options above from File > Plug-in Extras (works from either Library or Develop module), or from Library > Plug-in Extras while in Library module or Loupe view.
+To use, select a photo and then choose one of options above from File > Plug-in Extras (works from either Library or Develop module), or from Library > Plug-in Extras while in Library module or Loupe view.
 
 ### View Develop History Timestamps
 View Develop History Timestamps retrieves the date and time of all Develop History steps of an image in a floating window.
@@ -71,7 +71,7 @@ For example:
 3. A few years passed while you photographed other things in other places.
 4. The pandemic striked and there's nowhere to go. You stayed home and decided to look back on your Death Valley Wild Flowers Super-Bloom 2016 images and tackle the daunting task of keywording them. 
 5. You did so exceptionally well, but then realized that now your reverse sorting by "Edit Time" didn't mean anything anymore, because the keywording affected the "edit" time.
-6. You wondered if there's any way to find out when you last made develop changes to an image, since the last develop history step lacks a date next to it. 
+6. You wondered if there's any way to find out when you last made develop changes to an image, since the last develop history step of "Saturation +65" lacks a date next to it. 
 
 ### View Edit Time
 View Edit Time retrieves the date and time of Lightroom's regular Edit Time timestamp, which is used behind the scenes to sort images in the Library module (or filmstrip) by "Edit Time", but is not shown anywhere.

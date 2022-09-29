@@ -23,7 +23,7 @@ require "Utility"
 -- retrieve the active photo // returns nil if no photo selected
 local photo = catalog:getTargetPhoto() 
 
---check if a photo was selected
+-- check if a photo was selected
 if not photo then
     return nil, dialog.message("Please select a photo", "No photo seems to be selected. Please select a photo and try again")
 end
@@ -50,7 +50,7 @@ LrTasks.startAsyncTask( function()
         -- call function to query the catalog/database
         local outputContents = getFromDB(sql, "Retrieving latest develop time", "Latest Develop Time", "Retrieving latest develop time for the selected photo...")
         
-        --check if output received, if not show error
+        -- check if output received, if not show error
         if outputContents == nil then
             dialog.message("There was an error", msg, "critical")
             return nil
