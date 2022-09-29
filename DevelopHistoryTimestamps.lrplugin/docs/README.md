@@ -25,8 +25,10 @@ A discussion on this topic and the need for seeing the timestamps exists in the 
 ## Installation
 
 - Download the latest release zip archive from Github and extract to a folder of your choice.
+- Copy the entire DevelopHistoryTimestamps.lrplugin folder to wherever you store your Lightroom plugins. I like to keep mine in a "Lightroom Plugins" folder where my catalog file is located. However, it can be placed anywhere you wish on your hard drive.
 - In Ligthroom, go to File > Plug-in Manager and click Add.
-- Browse to the folder where you extracted the zip archive and select the DevelopHistoryTimestamps.lrplugin folder.
+- Browse to the location where you moved the DevelopHistoryTimestamps.lrplugin folder, select it and then click Select Folder button.
+- See Usage & Features section below on how to use the plugin features.
 
 ## Usage & Features
 

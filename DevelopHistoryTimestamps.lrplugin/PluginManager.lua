@@ -12,7 +12,7 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , _ )
                     spacing = viewFactory:control_spacing(),
 
                     viewFactory:static_text {
-                        title = "Click the button to learn more about this plugin on GitHub",
+                        title = "Click the button to learn more about this plugin and its features on GitHub  >>",
                         fill_horizontal = 1,
                     }, -- text
 
@@ -22,6 +22,23 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , _ )
                         enabled = true,
                         action = function()
                             LrHttp.openUrlInBrowser(_G.pluginURL)
+                        end,
+                    }, -- button
+                }, -- row
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+
+                    viewFactory:static_text {
+                        title = "If you come across any errors, please report an issue on GitHub  >>",
+                        fill_horizontal = 1,
+                    }, -- text
+
+                    viewFactory:push_button {
+                        width = 150,
+                        title = "Report Issue",
+                        enabled = true,
+                        action = function()
+                            LrHttp.openUrlInBrowser(_G.pluginIssuesURL)
                         end,
                     }, -- button
                 }, -- row
@@ -47,5 +64,6 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , _ )
 					}, -- button
 				}, -- row
             } -- section
+        
         } --return
 end
