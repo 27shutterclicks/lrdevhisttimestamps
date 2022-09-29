@@ -2,7 +2,7 @@
 
 An Adobe Lightroom Classic CC plugin that queries the Lightroom catalog (.lrcat file) and displays date and time information for an image's develop history steps or edit time.
 
-![Plugin screenshot](img/lr_history_Steps.jpg)
+![Plugin screenshot](lr_history_Steps.jpg)
 
 
 - [Introduction](#introduction)
