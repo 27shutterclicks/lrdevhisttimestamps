@@ -25,7 +25,7 @@ require "Utility"
 -- retrieve the active photo // returns nil if no photo selected
 local photo = catalog:getTargetPhoto()
 
---check if a photo was selected
+-- check if a photo was selected
 if not photo then
     return nil, dialog.message("Please select a photo", "No photo seems to be selected. Please select a photo and try again")
 end
@@ -47,12 +47,12 @@ LrTasks.startAsyncTask( function()
         local filename = photo:getFormattedMetadata ("fileName")
 
         -- prepare the SQL statement
-        local sql = 'SELECT changedAtTime,localTimeOffsetSecs FROM main.AgLibraryImageChangeCounter WHERE image LIKE \'%' .. photoID .. '%\';'
+        local sql = 'SELECT changedAtTime,localTimeOffsetSecs FROM main.AgLibraryImageChangeCounter WHERE image = ' .. photoID .. ';'
 
         -- call function to query the catalog/database
         local outputContents, msg = getFromDB(sql, "Retrieving Image Edit Time", "Latest Edit Time", "Retrieving last edited time for the selected photo...")
 
-        --check if output received, if not show error
+        -- check if output received, if not show error
         if outputContents == nil then
             dialog.message("There was an error", msg, "critical")
             return nil

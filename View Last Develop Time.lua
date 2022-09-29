@@ -45,7 +45,7 @@ LrTasks.startAsyncTask( function()
         local filename = photo:getFormattedMetadata ("fileName")
         
         -- prepare the SQL statement
-        local sql = 'SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE \'%' .. photoID .. '%\' ORDER BY dateCreated DESC LIMIT 1;'
+        local sql = 'SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image = \'' .. photoID .. '\' ORDER BY dateCreated DESC LIMIT 1;'
 
         -- call function to query the catalog/database
         local outputContents = getFromDB(sql, "Retrieving latest develop time", "Latest Develop Time", "Retrieving latest develop time for the selected photo...")

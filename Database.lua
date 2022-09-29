@@ -54,7 +54,7 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
     outputFile = LrFileUtils.chooseUniqueFileName( outputFile )
 
         -- sample working command in Windows 10
-    -- .\sqlite3.exe "E:\Pictures\Lightroom Catalog\My Catalog.lrcat" "SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image LIKE'%45099944%';" > sql.txt
+    -- .\sqlite3.exe "E:\Pictures\Lightroom Catalog\My Catalog.lrcat" "SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image = '45099944';" > sql.txt
     
     -- assemble shell command (see example above)
     cmd = cmdStart .. '"' .. catalog:getPath() .. '" "' .. sql .. '"'
