@@ -12,13 +12,13 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , _ )
                     spacing = viewFactory:control_spacing(),
 
                     viewFactory:static_text {
-                        title = "Click the button to learn more about this plugin on GitHuib",
+                        title = "Click the button to learn more about this plugin on GitHub",
                         fill_horizontal = 1,
                     }, -- text
 
                     viewFactory:push_button {
                         width = 150,
-                        title = "Visit GitHub",
+                        title = "Plugin Info",
                         enabled = true,
                         action = function()
                             LrHttp.openUrlInBrowser(_G.pluginURL)

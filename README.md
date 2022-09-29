@@ -21,22 +21,12 @@ For metadata changes, Lightroom maintains a separate counter that gets increased
 
 A discussion on this topic and the need for seeing the timestamps exists in the Adobe Community forums: [Timestamp in LR history for every command](https://community.adobe.com/t5/lightroom-ecosystem-cloud-based-discussions/timestamp-in-lr-history-for-every-command/td-p/11500328).
 
-## WARNING (and a little disclaimer)
-
-BEFORE USING THIS PLUGIN, IT IS HIGHLY RECOMMENDED YOU MAKE A BACKUP COPY OF YOUR CATALOG AND MAINTAIN A REGULAR BACKUP OF YOUR CATALOG AT ALL TIMES.
-
-PLEASE NOTE: This is my first Lightroom plugin that retrieves information from Lightroom's catalog file using (simple) methods that are not supported by the Lightroom SDK, since the SDK doesn't offer any functions/methods/mechanisms to retrieve this information. 
-
-The plugin fetches timestamps using simple SQL(ite) SELECT queries on specific tables of the catalog, which is basically an SQLite database. Since these queries run regardless of the "lock" Lightroom sets on the catalog file,  this MAY lead to catalog corruption and, therefore, data loss. I am open to further discussion on this topic if more experienced developers want to chime in and offer advice and possible enhancements to the query mechanism.
-
-That said, there have been no problems to date, as far as I know. 
 
 ## Installation
 
 - Download the latest release zip archive from Github and extract to a folder of your choice.
 - In Ligthroom, go to File > Plug-in Manager and click Add.
 - Browse to the folder where you extracted the zip archive and select the DevelopHistoryTimestamps.lrplugin folder.
-- Make sure you've read the WARNING section above.
 
 ## Usage & Features
 

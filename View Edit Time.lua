@@ -35,8 +35,8 @@ local photoID = photo.localIdentifier
 
 -- show initial message
 dialog.messageWithDoNotShow({
-        message = "The View Edit Time option  retrieves the date and time of Lightroom's regular Edit Time timestamp, which accounts for any changes to an image in regards to flagging, star rating, color labeling, keywording and maybe other metadata.",
-        info = "Use View Last Develop Time option of the plugin to get the latest Develop History Step timestamp.",
+        message = "The View Edit Time option retrieves the date and time of Lightroom's regular Edit Time timestamp, which accounts for any changes to an image in regards to developing, flagging, star rating, color labeling, keywording and maybe other metadata.",
+        info = "Tip: Use View Last Develop Time option of the plugin to get the latest Develop History Step timestamp.",
         actionPrefKey = "plgDevelopHistoryTimestampsLastChangeMsg"
     })
 
@@ -50,14 +50,19 @@ LrTasks.startAsyncTask( function()
         local sql = 'SELECT changedAtTime,localTimeOffsetSecs FROM main.AgLibraryImageChangeCounter WHERE image = ' .. photoID .. ';'
 
         -- call function to query the catalog/database
-        local outputContents, msg = getFromDB(sql, "Retrieving Image Edit Time", "Latest Edit Time", "Retrieving last edited time for the selected photo...")
+        local outputContents, msg, tempFile = getFromDB(sql, "Retrieving Image Edit Time", "Latest Edit Time", "Retrieving last edited time for the selected photo...")
 
         -- check if output received, if not show error
         if outputContents == nil then
-            dialog.message("There was an error", msg, "critical")
+            dialog.message("Error with database query output file." .. " (" .. tempFile .. ") " , msg, "critical")
             return nil
         end
-
+        
+        -- check if query return is empty - possible if no change counter found for photo ID
+        if #outputContents == 0 then
+            return nil, dialog.message('There is no "Edit Time" information available for this image in the catalog.', "Select another image and try again.")
+        end
+        
         -- split/explode the db output by divider
         outputContents = split(outputContents,"|")
 

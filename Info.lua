@@ -13,17 +13,17 @@ return {
         {
             title = 'View Develop &History Timestamps',
             file = 'Develop History Timestamps.lua',
-            enabledWhen = 'photosAvailable',
+            enabledWhen = 'photosSelected',
         },
         {
             title = 'View Last &Develop Time',
             file = 'View Last Develop Time.lua',
-            enabledWhen = 'photosAvailable',
+            enabledWhen = 'photosSelected',
         },
         {
             title = '&View Edit Time',
             file = 'View Edit Time.lua',
-            enabledWhen = 'photosAvailable',
+            enabledWhen = 'photosSelected',
         },
 	},
     
@@ -31,23 +31,23 @@ return {
         {
             title = 'View Develop &History Timestamps',
             file = 'Develop History Timestamps.lua',
-            enabledWhen = 'photosAvailable',
+            enabledWhen = 'photosSelected',
         },
         {
             title = 'View Last &Develop Time',
             file = 'View Last Develop Time.lua',
-            enabledWhen = 'photosAvailable',
+            enabledWhen = 'photosSelected',
         },
         {
             title = '&View Edit Time',
             file = 'View Edit Time.lua',
-            enabledWhen = 'photosAvailable',
+            enabledWhen = 'photosSelected',
         },
     },
 	
 	-- Add the entry for the Plug-in Manager Dialog
 	LrPluginInfoProvider = 'PluginInfoProvider.lua',
 	
-	VERSION = { major=0, minor=9, revision=3, },
+	VERSION = { major=0, minor=9, revision=4, },
 
 }

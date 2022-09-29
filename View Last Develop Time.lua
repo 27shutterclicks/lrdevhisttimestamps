@@ -34,7 +34,7 @@ local photoID = photo.localIdentifier
 -- show initial message
 dialog.messageWithDoNotShow({
         message = "View Last Develop Time retrieves the date and time of the last Develop History step of an image.\n\nNote that this is different from Lightroom's regular Edit Time timestamp, which also accounts for any changes to an image in regards to flagging, star rating, color labeling, keywording and maybe other metadata.",
-        info = "Use View Edit Time option of the plugin to get the regular Edit Time timestamp.",
+        info = "Tip: Use View Edit Time option of the plugin to get the regular Edit Time timestamp.",
         actionPrefKey = "plgDevelopHistoryTimestampsLastEditMsg"
     })
 

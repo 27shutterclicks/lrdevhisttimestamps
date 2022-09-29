@@ -129,12 +129,12 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
         -- remove strange characters from output file
         outputContents = outputContents:gsub( "[%z\255\254]", "" )
     else 
-        return nil, "The SQL query produced no output file or the output file is empty."
+        return nil, "The SQL query produced no output file or the output file is empty.", outputFile
     end
     
     -- delete temp output file
     LrFileUtils.delete(outputFile)
 
-    return outputContents
+    return outputContents, "Success", outputFile
     
 end --getFromDB
