@@ -122,7 +122,7 @@ LrTasks.startAsyncTask( function()
                 view:column { 				
                         view:edit_field { 
                             value = historySteps, 
-                            width_in_chars = 50,
+                            width_in_chars = 0,
                             height_in_lines = #stepDates < 50 and #stepDates+5 or 50
                         }, -- edit_field
                 }, -- column
