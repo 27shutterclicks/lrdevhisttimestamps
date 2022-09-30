@@ -84,7 +84,7 @@ LrTasks.startAsyncTask( function()
         changedTime = dst~= nil and changedTime-3600 or changedTime
         
         -- show output
-        dialog.message( os.date("%A, %B %d, %Y %I\:%M\:%S %p",changedTime), "Last edit time for: " .. filename, "info")
+        dialog.message( os.date("%B %d, %Y %I\:%M\:%S %p",changedTime), "Last edit time for: " .. filename, "info")
 
     end -- function()
 ) --startAsyncTask

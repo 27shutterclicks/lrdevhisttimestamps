@@ -105,7 +105,7 @@ LrTasks.startAsyncTask( function()
 
             -- build output with or without including the timestamp
             if not dateExists then
-                historySteps = historySteps .. stepName .. " (" .. stepDate .. ") - (" .. splitStep[key][3] ..")\n"
+                historySteps = historySteps .. stepName .. " (" .. stepDate .. ")\n"
             else
                 historySteps = historySteps .. stepName .. "\n" --omit the date if name includes it 
             end
