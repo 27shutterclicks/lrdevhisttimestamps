@@ -102,7 +102,7 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
                     end -- function context
             ) -- callwithcontext
 
-            -- set output flag for watiglobal function
+            -- set output flag for waitglobal function
             _G.dbOutput = true
 
             end -- startAsyncTask function()
