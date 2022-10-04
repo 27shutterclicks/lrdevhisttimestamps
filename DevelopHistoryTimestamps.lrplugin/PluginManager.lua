@@ -36,7 +36,7 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
 
     -- set initial plugin update text
     propertyTable.updateAvailableText = "Checking for plugin updates..."
-    propertyTable.updateButtonText = "Check Update"
+    propertyTable.updateButtonText = "Check for update"
     
     -- begin AsyncTask
     LrTasks.startAsyncTask( function()
@@ -51,6 +51,7 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
              
             if _G.updateAvailable then
                 propertyTable.updateButtonText = "View  Update"
+                propertyTable.synopsisText = "Update Available"
             end
             
         end
@@ -60,48 +61,64 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
     return {
             -- Section for the top of the dialog.
             {
-                title = "Plugin Info",
+                title = "Develop History Timestamps",
                 viewFactory:row {
-                    spacing = viewFactory:control_spacing(),
-                    viewFactory:static_text {
-                        title = "Click the button to learn more about this plugin and its features on GitHub  >>",
-                        fill_horizontal = 1,
-                    }, -- text
+                        spacing = viewFactory:control_spacing(),
+                        viewFactory:static_text {
+                            title = "Click the button to learn more about this plugin and its features on GitHub  >>",
+                            fill_horizontal = 1,
+                        }, -- text
 
-                    viewFactory:push_button {
-                        width = 150,
-                        title = "Plugin Info",
-                        enabled = true,
-                        action = function()
-                            LrHttp.openUrlInBrowser(_G.pluginURL)
-                        end,
-                    }, -- button
+                        viewFactory:push_button {
+                            width = 150,
+                            title = "Plugin Info",
+                            enabled = true,
+                            action = function()
+                                LrHttp.openUrlInBrowser(_G.pluginURL)
+                            end,
+                        }, -- button
                 }, -- row
                 viewFactory:row {
-                    spacing = viewFactory:control_spacing(),
+                        spacing = viewFactory:control_spacing(),
+                        viewFactory:static_text {
+                            title = "Like this plugin? Support its development by buying a fine art print  >>",
+                            fill_horizontal = 1,
+                        }, -- text
 
-                    viewFactory:static_text {
-                        title = "If you come across any errors, please report an issue on GitHub  >>",
-                        fill_horizontal = 1,
-                    }, -- text
-
-                    viewFactory:push_button {
-                        width = 150,
-                        title = "Report Issue",
-                        enabled = true,
-                        action = function()
-                            LrHttp.openUrlInBrowser(_G.pluginIssuesURL)
-                        end,
-                    }, -- button
+                        viewFactory:push_button {
+                            width = 150,
+                            title = "Buy a print",
+                            enabled = true,
+                            action = function()
+                                LrHttp.openUrlInBrowser(_G.pluginBuyPrintsURL)
+                            end,
+                        }, -- button
+                }, -- row
+                viewFactory:row {
+                        spacing = viewFactory:control_spacing(),
+                        viewFactory:static_text {
+                            title = "Author: Andrei I. Gere    Website: www.27shutterclicks.com",
+                            fill_horizontal = 1,
+                        }, -- text
+                        viewFactory:push_button {
+                            width = 150,
+                            title = "Follow on Twitter",
+                            enabled = true,
+                            action = function()
+                                LrHttp.openUrlInBrowser(_G.pluginTwitterURL)
+                            end,
+                        }, -- button
                 }, -- row
             }, -- section
 			{
 				title = "Plugin Help",
+                bind_to_object = propertyTable,
+                synopsis = bind 'synopsisText',
                 viewFactory:row {
                         spacing = viewFactory:control_spacing(),
-                        bind_to_object = propertyTable,
                         viewFactory:static_text {
                             title = bind 'updateAvailableText',
+                            font = bind 'updateButtonStyle',
                             fill_horizontal = 1,
                         }, -- text
 
@@ -114,62 +131,6 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
                             end
                         }, -- button
                 }, -- row  
-                viewFactory:row {
-                        spacing = viewFactory:control_spacing(),
-
-                        viewFactory:static_text {
-                            title = "Dev Assist",
-                            fill_horizontal = 1,
-                        }, -- text
-
-                        viewFactory:push_button {
-                            width = 150,
-                            title = "Dev Button",
-                            enabled = true,
-                            action = function()
-                                showDevDialog(_PLUGIN.path,2)
-                            end
-                        }, -- button
-                }, -- row
-                viewFactory:row {
-                        spacing = viewFactory:control_spacing(),
-
-                        viewFactory:static_text {
-                            title = "Copy plugin from dev to temp folder",
-                            fill_horizontal = 1,
-                        }, -- text
-
-                        viewFactory:push_button {
-                            width = 150,
-                            title = "Update Dev Plugin",
-                            enabled = true,
-                            action = function()
-                                        
-                                local devPluginPath = "E:\\Pictures\\Lightroom Catalog\\Lightroom Plugins\\Develop History Timestamps\\DevelopHistoryTimestamps.lrplugin"
-                        
-                                local tempPluginPath = "C:\\temp\\DevelopHistoryTimestamps.lrplugin"
-                                
-                                -- delete temp plugin
-                                local deleteTempPlugin = fileUtils.delete(tempPluginPath)
-                        
-                                if deleteTempPlugin then
-                                    dialog.showBezel("Temp plugin deleted")
-                                else 
-                                    dialog.showBezel("Temp plugin deletion failed")
-                                end
-                        
-                                -- copy dev plugin
-                                local copyDevPlugin = fileUtils.copy(devPluginPath, tempPluginPath)
-                        
-                                if copyDevPlugin then
-                                    dialog.showBezel("Dev plugin copied to temp plugin folder",2)
-                                else 
-                                    dialog.showError("Dev plugin copy operation failed")
-                                end
-                        
-                            end
-                        }, -- button
-                }, -- row
 				viewFactory:row {
 					spacing = viewFactory:control_spacing(),
 
@@ -188,14 +149,30 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
 						end,
 					}, -- button
 				}, -- row
-            } -- section
-        
-        } --return
+                viewFactory:row {
+                    spacing = viewFactory:control_spacing(),
+
+                    viewFactory:static_text {
+                        title = "If you come across any errors, please report an issue on GitHub  >>",
+                        fill_horizontal = 1,
+                    }, -- text
+
+                    viewFactory:push_button {
+                        width = 150,
+                        title = "Report Issue",
+                        enabled = true,
+                        action = function()
+                            LrHttp.openUrlInBrowser(_G.pluginIssuesURL)
+                        end,
+                    }, -- button
+                }, -- row
+            }, -- section
+            
+        } -- return
 end
 
 function PluginManager.checkUpdateAvailable()
     
-    log("in check update...")
     local checkURL = _G.pluginUpdateReleaseURL
     local headers = {
             { field = 'Accept',  value = "application/json" }
@@ -220,7 +197,6 @@ function PluginManager.checkUpdateAvailable()
 --            local pluginVersion = info.VERSION.major .. '.' .. info.VERSION.minor .. '.' .. info.VERSION.revision
             local pluginVersion = _G.pluginVersion
             
-            log("plugin version is:" .. pluginVersion)
 --            local pluginVersion= "0.9.5"
 
             -- compare local version number with update version number
@@ -300,6 +276,7 @@ function PluginManager.checkUpdate ()
                 
                 dialog.showBezel("Downloading Update...")
 
+                LrTasks.sleep(2)
                 -- COMMAND EXAMPLE:
 --                 tar --strip-components=1 -xf 27shutterclicks-lrdevhisttimestamps-v0.9.5-0-g82626d4.zip
                 
@@ -310,10 +287,8 @@ function PluginManager.checkUpdate ()
                     extractCommand = 'cmd /c "' .. extractCommand .. '"'
                 end
 
-                log("extract command is: " .. extractCommand)
                 local pluginBackupFolder = paths.child(paths.parent(_PLUGIN.path), pluginFolderName .. "-" .. currentVersion .. "-backup")
                 
-                log("plugin backup folder is: " .. pluginBackupFolder)
                 -- rename the current version plugin folder
                 local move, message = fileUtils.move(_PLUGIN.path,pluginBackupFolder)
 
@@ -335,17 +310,16 @@ function PluginManager.checkUpdate ()
                 if extractStatus == 0 then
                     dialog.showBezel("Update extracted")
                 else 
-                    log("extractStatus is: " .. extractStatus)
-                    return nil, dialog.showError("There was an error extracting the plugin update.")
+                    return nil, dialog.message("There was an error extracting the plugin update.")
                 end
+                
+                LrTasks.sleep(2)
                     
                 -- CONFIRM DELETE OR BACKUP
                 local confirmBackup = dialog.confirm("Plugin updated!", "\nWould you like to delete the old plugin version or keep a backup?\n","Delete old version", "Keep a backup")
 
                 if confirmBackup == "ok" then -- delete old version
                     
-                    log("plugin backup folder in delete is: " .. pluginBackupFolder)
-
                     local deleteFolder, message = fileUtils.delete(pluginBackupFolder)
                     
                     if deleteFolder then
@@ -364,6 +338,7 @@ function PluginManager.checkUpdate ()
                     dialog.showError("The update archive could not be deleted")
                 end
                     
+                dialog.showBezel('Updated. Click "Reload Plug-in" button in Plugin Manager')
                 dialog.message("Plugin updated", 'Please click the "Reload Plug-in" button in the Plugin Manager window to start using the new version.')
 
             elseif  (confirmUpdate == "ok" and checkTar ~= 0) then -- no tar support
