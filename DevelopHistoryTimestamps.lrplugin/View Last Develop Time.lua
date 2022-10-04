@@ -63,13 +63,16 @@ LrTasks.startAsyncTask( function()
         splitStep = split(outputContents,"|")
         
         -- set output values to variables
-        local lastEdited = splitStep[2]
+        local lastDevelopTime = splitStep[2]
 
         -- format timestamp to string
-        lastEdited = timeStampToDate(lastEdited,"%B %d, %Y %I\:%M\:%S %p")
+        lastDevelopTime = timeStampToDate(lastDevelopTime,"%B %d, %Y %I\:%M\:%S %p")
 
+        -- display bezel message
+        dialog.showBezel("Displaying Last Develop Time")
+        
         -- show output
-        dialog.message( lastEdited, "Latest develop time for: " .. filename, "info")
+        dialog.message( lastDevelopTime, "Latest develop time for: " .. filename, "info")
 
     end -- function()
 ) --startAsyncTask

@@ -54,7 +54,7 @@ LrTasks.startAsyncTask( function()
         local sql = 'SELECT name,dateCreated,image FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image = \'' .. photoID .. '\' ORDER BY dateCreated DESC;'
 
         -- call function to query the catalog/database
-        local outputContents, msg = getFromDB(sql)
+        local outputContents, msg = getFromDB(sql,"Retrieving history steps from catalog database")
 
         -- check if output received, if not show error
         if outputContents == nil then
@@ -127,7 +127,10 @@ LrTasks.startAsyncTask( function()
                         }, -- edit_field
                 }, -- column
             } -- row
-
+        
+        -- display bezel message
+        dialog.showBezel("Displaying History Timestamps")
+        
         --show floating dialog
         local dialog = dialog.presentFloatingDialog(_PLUGIN,
             {

@@ -76,28 +76,22 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
                                 }
                             )
                     
-                    -- configure progress bar
-                    local progressScope = dialog.showModalProgressDialog({
-                              title = progressDialogTitle,
-                              caption = progressDialogMsg,
-                              cannotCancel = true,
-                              functionContext = context,
-                                }
-                            )
-                    
                     -- animate progress bar    
-                    progressScope:setPortionComplete(0.2, 1)
-                    progressScope:setPortionComplete(0.5, 1)
-                    progressScope:setPortionComplete(0.8, 1)
-
+                    progressTask:setPortionComplete(0.2, 1)
+                    progressTask:setPortionComplete(0.5, 1)
+                    progressTask:setPortionComplete(0.8, 1)
+                    
                     -- execute the sql query
                     LrTasks.execute(cmd)
+                    
+                    progressTask:done()
 
+                    dialog.showBezel(progressScopeMsg,2)
+                    LrTasks.sleep(2)
                     -- increase progress
-                    progressScope:setPortionComplete(0.9, 1)
+--                    progressScope:setPortionComplete(0.9, 1)
 
                     -- mark progress complete
-                    progressScope:done()
 
                     end -- function context
             ) -- callwithcontext

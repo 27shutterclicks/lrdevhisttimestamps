@@ -83,8 +83,14 @@ LrTasks.startAsyncTask( function()
         -- subtract one hour if DST is in effect
         changedTime = dst~= nil and changedTime-3600 or changedTime
         
+        -- save the formatted time string to variable
+        local lastEditTime = os.date("%B %d, %Y %I\:%M\:%S %p",changedTime)
+        
+        -- display bezel message
+        dialog.showBezel("Displaying Last Edit Time")
+
         -- show output
-        dialog.message( os.date("%B %d, %Y %I\:%M\:%S %p",changedTime), "Last edit time for: " .. filename, "info")
+        dialog.message( lastEditTime, "Last edit time for: " .. filename, "info")
 
     end -- function()
 ) --startAsyncTask
