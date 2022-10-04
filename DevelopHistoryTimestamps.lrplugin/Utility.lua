@@ -4,6 +4,9 @@ Utility functions
 
 ------------------------------------------------------------------------------]]
 
+local LrDialogs = import 'LrDialogs'
+local LrView = import 'LrView'
+
 -- ref: https://stackoverflow.com/a/40180465/10792097
 
 -- split("a,b,c", ",") => {"a", "b", "c"}
@@ -76,4 +79,36 @@ function fromISODate(stringDate, format)
     return format ~= nil and os.date(format,time) or time
     
     
+end
+
+-- utility function for displaying a simple dialog with an edit field for showing longer strings
+function showDevDialog( data, location )
+   
+    local bigFieldData, smallFieldData = ""
+    
+    if location ~= nil then
+        if location == 1 then
+            bigFieldData = data
+        elseif location == 2 then
+            smallFieldData = data
+        end
+    else
+        smallFieldData = data
+    end
+    
+    local f = LrView.osFactory()
+	local c = 
+		f:row{
+		bind_to_object = props,	
+			f:column { 				
+				f:edit_field { value = bigFieldData, width_in_chars = 80, height_in_lines = 10 },
+                f:edit_field { value = smallFieldData, width_in_chars = 80, height_in_lines = 1 },
+			},
+		} 
+	LrDialogs.presentModalDialog(
+		{
+			title = "Dev Data" ,
+			contents = c,
+		}
+	)
 end
