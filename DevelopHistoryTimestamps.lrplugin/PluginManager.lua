@@ -167,7 +167,7 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
         } -- return
 end
 
-function PluginManager.checkUpdateAvailable()
+function PluginManager.checkUpdateAvailable(override)
     
     local checkURL = _G.pluginUpdateReleaseURL
     local headers = {
@@ -196,7 +196,7 @@ function PluginManager.checkUpdateAvailable()
 --            local pluginVersion= "0.9.5"
 
             -- compare local version number with update version number
-            if pluginUpdateVersion > pluginVersion then
+            if (pluginUpdateVersion > pluginVersion) or (override) then
                 _G.updateAvailable = true
                 _G.updateVersion = response.tag_name
                 _G.updateDate = os.date("%B %d, %Y",fromISODate(response.published_at))
@@ -214,7 +214,7 @@ function PluginManager.checkUpdateAvailable()
         
 end -- checkUpdateAvailable()
 
-function PluginManager.checkUpdate ()
+function PluginManager.checkUpdate (override) --override bool parameter used to force update check in devtools
 
     local checkURL = _G.pluginUpdateReleaseURL
     local headers = {
@@ -227,7 +227,11 @@ function PluginManager.checkUpdate ()
      -- begin AsyncTask
     LrTasks.startAsyncTask( function()
 
-            PluginManager.checkUpdateAvailable()
+            if override then
+                PluginManager.checkUpdateAvailable(true)
+            else
+                PluginManager.checkUpdateAvailable()
+            end
         
             local updateTimeWaited = waitForGlobal('updateCheck')
             
@@ -236,7 +240,7 @@ function PluginManager.checkUpdate ()
             LrTasks.sleep(2)
             
             -- if no update, display message
-            if not _G.updateAvailable then
+            if (not _G.updateAvailable) and (not override) then
                 return nil, dialog.message("You are using the latest version of the plugin", "Keep on inspecting timestamps!")
             end
             
