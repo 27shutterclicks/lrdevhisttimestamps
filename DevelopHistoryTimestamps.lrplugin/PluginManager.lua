@@ -6,6 +6,8 @@ local paths = import 'LrPathUtils'
 local fileUtils = import 'LrFileUtils'
 local LrView = import 'LrView'
 local LrBinding = import "LrBinding"
+local LrColor = import 'LrColor'
+
 --local LrFunctionContext = import 'LrFunctionContext'
 
 local inspect = require 'inspect'
@@ -98,6 +100,11 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
                         spacing = viewFactory:control_spacing(),
                         viewFactory:static_text {
                             title = "Author: Andrei I. Gere    Website: www.27shutterclicks.com",
+                            text_color = LrColor(.1, .2, .5),
+                            tooltip = "Click to visit website",
+                            mouse_down = function()
+                                LrHttp.openUrlInBrowser(info.LrPluginInfoUrl)
+                            end,
                             fill_horizontal = 1,
                         }, -- text
                         viewFactory:push_button {
@@ -374,13 +381,13 @@ function PluginManager.checkUpdate ()
 
 end -- checkUpdate()
 
-function PluginManager.downloadUpdate ( url )
+function PluginManager.downloadUpdate (url)
 
 --        local downloadPath = paths.getStandardFilePath("temp")
     
         -- download update to plugin parent folder
         local downloadPath = paths.parent(_PLUGIN.path)
-
+    
         -- also possible url: https://github.com/27shutterclicks/lrdevhisttimestamps/archive/v0.9.5/lrdevhisttimestamps-v0.9.5
 
         -- get the zipball
@@ -397,8 +404,6 @@ function PluginManager.downloadUpdate ( url )
 
                 filename = split(value.value,"=")[2]
                 folderName = filename:match("(.+)%..+$")
-                log("filename equals: ".. filename)
-                log("folder is: ".. folderName)
             end -- if
         end -- for
 

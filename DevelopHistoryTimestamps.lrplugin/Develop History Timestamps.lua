@@ -105,9 +105,9 @@ LrTasks.startAsyncTask( function()
 
             -- build output with or without including the timestamp
             if not dateExists then
-                historySteps = historySteps .. stepName .. " (" .. stepDate .. ")\n"
+                historySteps = historySteps .. "\n" .. stepName .. " (" .. stepDate .. ")"
             else
-                historySteps = historySteps .. stepName .. "\n" --omit the date if name includes it 
+                historySteps = historySteps .. "\n" .. stepName --omit the date if name includes it 
             end
 
             -- decrease step number variable
@@ -116,18 +116,15 @@ LrTasks.startAsyncTask( function()
 
         -- build the dialog box view
         local view = LrView.osFactory()
-        local contents = 
-            view:row{
-                bind_to_object = props,	-- not currently in use
-                view:column { 				
+        local dialogContents = 
+                view:column { 	
                         view:edit_field { 
                             value = historySteps, 
                             width_in_chars = 50,
-                            height_in_lines = #stepDates < 50 and #stepDates+5 or 50
+                            height_in_lines = #stepDates < 50 and #stepDates+6 or 50
                         }, -- edit_field
                 }, -- column
-            } -- row
-        
+            
         -- display bezel message
         dialog.showBezel("Displaying History Timestamps")
         
@@ -135,7 +132,7 @@ LrTasks.startAsyncTask( function()
         local dialog = dialog.presentFloatingDialog(_PLUGIN,
             {
                 title = "Develop History Steps for: " .. filename ,
-                contents = contents,
+                contents = dialogContents,
                 -- save_frame = "plgDevelopHistoryStepTimestamps",
                 onShow = function(t)
                     _G.floatingDialog = t

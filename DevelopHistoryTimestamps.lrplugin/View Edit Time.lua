@@ -90,7 +90,7 @@ LrTasks.startAsyncTask( function()
         dialog.showBezel("Displaying Last Edit Time")
 
         -- show output
-        dialog.message( lastEditTime, "Last edit time for: " .. filename, "info")
+        dialog.message( lastEditTime, "Last edit time for: " .. filename)
 
     end -- function()
 ) --startAsyncTask

@@ -72,7 +72,7 @@ LrTasks.startAsyncTask( function()
         dialog.showBezel("Displaying Last Develop Time")
         
         -- show output
-        dialog.message( lastDevelopTime, "Latest develop time for: " .. filename, "info")
+        dialog.message( lastDevelopTime, "Latest develop time for: " .. filename)
 
     end -- function()
 ) --startAsyncTask
