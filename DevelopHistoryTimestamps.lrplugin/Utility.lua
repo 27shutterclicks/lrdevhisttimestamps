@@ -6,10 +6,23 @@ Utility functions
 
 local LrDialogs = import 'LrDialogs'
 local LrView = import 'LrView'
+local LrLogger = import 'LrLogger'
 
--- ref: https://stackoverflow.com/a/40180465/10792097
+-- ENABLE LOGGING
+local logger = LrLogger('com.27shutterclicks.lr.develophistorytimestamps')
+logger:enable( "print" ) -- Pass either a string or a table of actions.
 
--- split("a,b,c", ",") => {"a", "b", "c"}
+function log( message, desc )
+	if desc ~= nil then
+        logger:info(" " .. desc .. ": " .. tostring(message)) -- spaces added to address formatting issues on Mac console
+    else 
+        logger:info( " " .. tostring(message) )
+    end
+end
+
+-- SPLITTING FUNCTION - for splitting by delimiter, similar to explode()
+-- e.g.: split("a,b,c", ",") => {"a", "b", "c"}
+--[[ ref: https://stackoverflow.com/a/40180465/10792097 ]]
 
 function split(s, sep)
     local fields = {}

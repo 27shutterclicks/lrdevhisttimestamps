@@ -1,6 +1,5 @@
 local dialog = import 'LrDialogs'
 local LrHttp = import "LrHttp"
-local LrLogger = import 'LrLogger'
 local LrTasks = import 'LrTasks'
 local paths = import 'LrPathUtils'
 local fileUtils = import 'LrFileUtils'
@@ -18,16 +17,6 @@ local info = require 'Info'
 require "Utility"
 
 PluginManager = {}
-
-local logger = LrLogger('com.27shutterclicks.lr.develophistorytimestamps')
-logger:enable( "print" ) -- Pass either a string or a table of actions.
-
-local function log( message, desc )
-	if desc ~= nil then
-        logger:info(desc)
-    end
-    logger:info( message )
-end
 
 function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
     
@@ -258,19 +247,21 @@ function PluginManager.checkUpdate ()
             
             local releaseNotes = "(Currently installed version is " .. currentVersion .. ')\n\n' .. response.body
 
-            -- check if tar supported
+            local buttonText = "Update Now"
+            
+            local checkTar = 0 -- initialize variable that holds tar support check flag
+            
+            -- check if tar supported (mostly for Windows, Mac supports by default)
+            if WIN_ENV then
+                
+                checkTar = LrTasks.execute('cmd /c "WHERE tar"')
 
-            local checkTar = LrTasks.execute('cmd /c "WHERE tar"')
---            local checkTar = 1
-            local buttonText = ""
-
-            if checkTar ~= 0 then
-                -- tar not supported, plugin may need to be updated manually
-                buttonText = "Open update folder"
-                releaseNotes = releaseNotes .. "\n\nNote: The plugin is unable to install the update automatically. It will need to be installed manually."
-            else
-                buttonText = "Update Now"
-            end
+                if checkTar ~= 0 then
+                    -- tar not supported, plugin may need to be updated manually
+                    buttonText = "Open update folder"
+                    releaseNotes = releaseNotes .. "\n\nNote: The plugin is unable to install the update automatically. It will need to be installed manually."
+                end
+            end -- if WIN_ENV
 
             local confirmUpdate = dialog.confirm("Version " .. response.tag_name .. " is available." ,releaseNotes, buttonText)
 
@@ -299,19 +290,9 @@ function PluginManager.checkUpdate ()
                 -- rename the current version plugin folder
                 local move, message = fileUtils.move(_PLUGIN.path,pluginBackupFolder)
 
-                --[[local pluginsFolder = paths.parent(_PLUGIN.path)
-                    
-                -- move the extracted update folder to the plugins folder
-                local moveUpdateFolder = fileUtils.move()
-                
-                if moveUpdateFolder then
-                    dialog.showBezel("Update extracted")
-                else 
-                    return nil, dialog.showError("There was an error installing the plugin update.")
-                end]]
-                
                 -- extract download archive
                 local extractStatus = LrTasks.execute(extractCommand)
+                
                 dialog.showBezel("Extracting update...")
 
                 if extractStatus == 0 then
@@ -391,22 +372,22 @@ function PluginManager.downloadUpdate (url)
         -- also possible url: https://github.com/27shutterclicks/lrdevhisttimestamps/archive/v0.9.5/lrdevhisttimestamps-v0.9.5
 
         -- get the zipball
-        local download, code = LrHttp.get(url, headers)
+        local download, code = LrHttp.get(url)
 
         local status = code["status"] --returned by get request
-        code.status = nil
-
+    
+--        code["status"] = nil -- unset from table for easier looping
+    
         local filename = ""
         local folderName = ""
 
         for key,value in pairs(code) do
-            if value.field == 'content-disposition' then
-
+            if (type(value) == "table" ) and (string.lower(value.field) == 'content-disposition') then
                 filename = split(value.value,"=")[2]
                 folderName = filename:match("(.+)%..+$")
             end -- if
         end -- for
-
+    
         local saveFileName = paths.child(downloadPath,filename)
         local saveFile = assert(io.open(saveFileName, 'wb'))
         saveFile:write(download)
