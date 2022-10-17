@@ -1,6 +1,6 @@
 # Lightroom Develop History Steps Timestamps
 
-An Adobe Lightroom Classic CC plugin that queries the Lightroom catalog (.lrcat file) and displays date and time information for an image's develop history steps or edit time.
+An Adobe Lightroom Classic plugin that queries the Lightroom catalog (.lrcat file) and displays date and time information for an image's develop history steps or edit time.
 
 ![Plugin screenshot](/DevelopHistoryTimestamps.lrplugin/docs/lr_history_timestamps.jpg)
 
@@ -24,10 +24,10 @@ A discussion on this topic and the need for seeing the timestamps exists in the 
 
 ## Installation
 
-- Download the latest release zip archive from Github and extract to a folder of your choice.
-- Copy the entire DevelopHistoryTimestamps.lrplugin folder to wherever you store your Lightroom plugins. A good location is  in a "Lightroom Plugins" folder where the Lightroom catalog file is located. 
-- In Ligthroom, go to File > Plug-in Manager and click Add.
-- Select the DevelopHistoryTimestamps.lrplugin folder u copied, then click Select Folder button.
+- Download the [latest release](https://github.com/27shutterclicks/lrdevhisttimestamps/releases/tag/v0.9.9) zip archive from Github and extract to a folder of your choice.
+- Copy the entire *DevelopHistoryTimestamps.lrplugin* folder to wherever you store your Lightroom plugins. A good location is  in a "*Lightroom Plugins*" folder where the Lightroom catalog file is located. 
+- In Ligthroom, go to *File > Plug-in Manager* and click **Add**.
+- Select the *DevelopHistoryTimestamps.lrplugin* folder u copied, then click **Select Folder** button.
 
 ## Usage & Features
 
@@ -40,7 +40,7 @@ The plugin adds three new options to File > Plug-in Extras and Library > Plug-in
 To use, select a photo and then choose one of options above from File > Plug-in Extras (works from either Library or Develop module), or from Library > Plug-in Extras while in Library module or Loupe view.
 
 ### View Develop History Timestamps
-View Develop History Timestamps retrieves the date and time of all Develop History steps of an image in a floating window.
+*File > Plug-in Extras > View Develop History Timestamps* retrieves the date and time of all Develop History steps of an image in a floating window.
 
 These are the same steps displayed in the Develop Module > History panel for any given image, with the addition of their respective timestamp at the end.
 
@@ -51,7 +51,7 @@ You may open multiple Develop History Steps windows by leaving the window open a
 For images that have numerous history steps (some can reach hundreds of steps), only the most recent 50 steps will be visible. To see the rest, click inside the window and drag down to see all entries or click inside the window and use Ctrl/Cmd + A to select all for copying and pasting elsewhere.
 
 ### View Last Develop Time
-View Last Develop Time retrieves the date and time of the last Develop History step of an image (also shown using the View Develop History Timestamps option). This is different from Lightroom's regular Edit Time timestamp, which also accounts for any changes to an image in regards to flagging, star rating, color labeling, keywording and maybe other metadata. 
+*File > Plug-in Extras > View Last Develop Time* retrieves the date and time of the last Develop History step of an image (also shown using the View Develop History Timestamps option). This is different from Lightroom's regular Edit Time timestamp, which also accounts for any changes to an image in regards to flagging, star rating, color labeling, keywording and maybe other metadata. 
 
 Using this option can be useful when working with older images which may have been "developed" at a certain time, but managed (flagged, rated, labeled, keyworded) at a very different time. 
 
@@ -65,7 +65,7 @@ For example:
 6. You wondered if there's any way to find out when you last made develop changes to an image, since the last develop history step of "Saturation +65" lacks a date next to it. 
 
 ### View Edit Time
-View Edit Time retrieves the date and time of Lightroom's regular Edit Time timestamp, which is used behind the scenes to sort images in the Library module (or filmstrip) by "Edit Time", but is not shown anywhere.
+*File > Plug-in Extras > View Edit Time* retrieves the date and time of Lightroom's regular Edit Time timestamp, which is used behind the scenes to sort images in the Library module (or filmstrip) by "Edit Time", but is not shown anywhere.
 
 The Edit Time is maintained by Lightroom separately from the develop history steps and is updated automatically with any changes to an image in regards to flagging, star rating, color labeling, keywording and maybe other metadata, including any develop module edits to the image. 
 
