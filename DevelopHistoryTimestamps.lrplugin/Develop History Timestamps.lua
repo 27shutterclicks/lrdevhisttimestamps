@@ -19,9 +19,12 @@ local LrStringUtils = import 'LrStringUtils'
 local LrFunctionContext = import 'LrFunctionContext'
 local LrBinding = import 'LrBinding'
 
+local prefs = import 'LrPrefs'.prefsForPlugin() 
+
 -- include files
 require "Database"
 require "Utility"
+local inspect = require 'Inspect'
 
 -- retrieve the active photo // returns nil if no photo selected
 local photo = catalog:getTargetPhoto() 
@@ -78,6 +81,9 @@ LrTasks.startAsyncTask( function()
         
         -- save oldest history step (first import/copy creation) to variable
         local firstEditStep = split(stepDates[#stepDates],"|")
+        
+        -- initialize variable that will hold the length of the longest step (for dialog box width size)
+        local stepStringLength = 0
 
         -- build history steps output
         historySteps = historySteps .. "-----------------------\n"
@@ -86,32 +92,70 @@ LrTasks.startAsyncTask( function()
         historySteps = historySteps .. "-----------------------\n"
 
         -- save number of history steps to variable
-        local stepNo = #stepDates
-
+        local stepNumber = #stepDates
+        
+        -- get plugin options
+        local showTimestamps = prefs.showTimestamps
+        local showDualTimestamps = prefs.showDualTimestamps
+        local showTimestampsLeft = prefs.showTimestampsLeft
+        local showStepNumbers = prefs.showStepNumbers
+        local showStepNumbersRight = prefs.showStepNumbersRight
+        
+        local stepNumbersTextLeft, stepNumbersTextRight = ""
+        local stepDateBaked = ""
+        
         -- loop through history steps and build output
         for key,value in ipairs(stepDates) do
 
             -- split step by separator (e.g.: Update Radial Gradient 1|685337266.640549 )
             splitStep[key] = split(value,"|")
             
-            -- add the step number before the step name
-            stepName = "Step " .. stepNo .. ": " .. splitStep[key][1]
-
+            local stepName = splitStep[key][1]
+            
             -- check if step may already include a date, usually included in paranthesis after the step name
             local dateExists = string.find(stepName,"%(") --returns nil if not found
             
             -- save the step timestamp to variable
             stepDate = timeStampToDate(splitStep[key][2])
-
-            -- build output with or without including the timestamp
-            if not dateExists then
-                historySteps = historySteps .. "\n" .. stepName .. " (" .. stepDate .. ")"
-            else
-                historySteps = historySteps .. "\n" .. stepName --omit the date if name includes it 
+            
+            if dateExists then
+                -- extract baked-in timestamp
+                stepDateBaked = string.sub(stepName, dateExists, #stepName)
+                
+                -- extract the step name
+                stepName = string.sub(stepName, 1, dateExists-2)
             end
 
+            --build date based on plugin options
+            if dateExists and not prefs.showDualTimestamps then
+                stepDate = " " .. stepDateBaked -- timestamp is the baked-in one
+            elseif dateExists and prefs.showDualTimestamps then
+                stepDate = " (" .. stepDate .. ") " .. stepDateBaked .. " "
+            else 
+                stepDate = " (" .. stepDate .. ") "
+            end
+            
+            local stepNumberLeft = "Step " .. stepNumber .. ": "
+            local stepNumberRight = " - Step " .. stepNumber
+            
+            -- get format for current step
+            local currentStep = getHistoryStepFormat(stepName, stepDate, stepNumberLeft, stepNumberRight)
+
+            -- check if show photo ID is enabled
+            if prefs.showPhotoID then
+                currentStep = "ID: " .. photoID .. " - " .. currentStep 
+            end
+            
+            -- add current step to the other steps
+            historySteps = historySteps .. "\n" .. currentStep
+            
             -- decrease step number variable
-            stepNo = stepNo - 1
+            stepNumber = stepNumber - 1
+            
+            -- check string length of step
+            if stepStringLength < #currentStep then
+                stepStringLength = #currentStep
+            end
         end
 
         -- build the dialog box view
@@ -120,7 +164,7 @@ LrTasks.startAsyncTask( function()
                 view:column { 	
                         view:edit_field { 
                             value = historySteps, 
-                            width_in_chars = 50,
+                            width_in_chars = stepStringLength/1.7,
                             height_in_lines = #stepDates < 50 and #stepDates+6 or 50
                         }, -- edit_field
                 }, -- column
@@ -141,3 +185,86 @@ LrTasks.startAsyncTask( function()
         )
   end -- startasynctask function
 ) -- startasynctask
+
+function getHistoryStepFormat(stepName, stepDate, stepNumberLeft, stepNumberRight)
+    
+    -- step builder examples
+    local histNoStepNumberNoTimestamp = stepName
+    local histStepNumberNoTimestamp = stepNumberLeft .. stepName
+    local histStepNumberRightNoTimestamp = stepName .. stepNumberRight
+    local histDefault = stepNumberLeft .. stepName .. stepDate
+    local histDefaultNoStepNumber = stepName .. stepDate
+    local histDefaultStepNumberRight = stepName .. stepDate .. stepNumberRight
+
+    local histTimestampLeftStepNumberRight = stepDate .. stepName .. stepNumberRight
+    local histTimestampLeftNoStepNumber = stepDate .. stepName 
+    local histTimestampLeft = stepDate .. stepNumberLeft .. stepName
+
+    local histDualTimestamps = stepNumberLeft .. stepName .. stepDate
+    local histDualTimestampsStepNumberRight = stepName .. stepDate .. stepNumberRight
+    local histDualTimestampsLeft = stepDate .. stepNumberLeft .. stepName
+    local histDualTimestampsLeftStepNumberRight = stepDate .. stepName .. stepNumberRight
+    local histDualTimestampsLeftNoStepNumber = stepDate .. stepName
+    local histDualTimestampsRightNoStepNumber = stepName .. stepDate
+
+--    dialog.message("prefs " .. inspect(prefs))
+    if not prefs.showTimestamps then
+        if prefs.showStepNumbers then
+            if prefs.showStepNumbersRight then
+                return histStepNumberRightNoTimestamp
+            else 
+                return histStepNumberNoTimestamp
+            end
+        else
+            return histNoStepNumberNoTimestamp
+        end
+    else --if showing timestamps
+        if prefs.showDualTimestamps then
+            if prefs.showTimestampsLeft then
+                if prefs.showStepNumbers then
+                    if prefs.showStepNumbersRight then
+                        return histDualTimestampsLeftStepNumberRight
+                    else -- step numbers left
+                        return histDualTimestampsLeft
+                    end
+                else --no step numbers 
+                    return histDualTimestampsLeftNoStepNumber
+                end
+            else -- show timestamps right
+                if prefs.showStepNumbers then
+                    if prefs.showStepNumbersRight then
+                        return histDualTimestampsStepNumberRight
+                    else -- step numbers left
+                        return histDualTimestamps
+                    end
+                else --no step numbers 
+                    return histDualTimestampsRightNoStepNumber
+                end
+            end -- if timestamps left
+        else -- not dual
+            if prefs.showStepNumbers then
+                if prefs.showStepNumbersRight then
+                    if prefs.showTimestampsLeft then
+                        return histTimestampLeftStepNumberRight
+                    else
+                        return histDefaultStepNumberRight
+                    end
+                else -- step numbers left
+                    if prefs.showTimestampsLeft then
+                        return histTimestampLeft
+                    else
+                        return histDefault
+                    end
+                end
+            else --no step numbers 
+                if prefs.showTimestampsLeft then
+                    return histTimestampLeftNoStepNumber
+                else
+                    return histDefaultNoStepNumber
+                end
+            end -- if step numbers
+        end -- if dual timestamps
+    end -- 
+
+
+end -- getHistoryStepFormat()

@@ -7,9 +7,11 @@ local LrView = import 'LrView'
 local LrBinding = import "LrBinding"
 local LrColor = import 'LrColor'
 
+local prefs = import 'LrPrefs'.prefsForPlugin() 
+
 --local LrFunctionContext = import 'LrFunctionContext'
 
-local inspect = require 'inspect'
+local inspect = require 'Inspect'
 
 local json = require 'JSON'
 local info = require 'Info'
@@ -25,34 +27,63 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
     -- create shortcut for LrView
     local bind = LrView.bind
 
+
     -- set initial plugin update text
-    propertyTable.updateAvailableText = "Checking for plugin updates..."
+    propertyTable.updateLabelText = _G.updateCheckText .. prefs.updateLastCheck
     propertyTable.updateButtonText = "Check for update"
+    propertyTable.updateButtonEnabled = true
+--    propertyTable.checkForUpdate = prefs.checkForUpdate
     
-    -- begin AsyncTask
-    LrTasks.startAsyncTask( function()
-            
---            _G.updateAvailable = nil
-            
-            PluginManager.checkUpdateAvailable()
-            
-            local timeWaited = waitForGlobal('updateCheck')
-            
-            propertyTable.updateAvailableText = _G.updateAvailableText
-             
-            if _G.updateAvailable then
-                propertyTable.updateButtonText = "View  Update"
-                propertyTable.synopsisText = "Update Available"
+    -- step builder examples
+    local histNoStepNumberNoTimestamp = "Exposure"
+    local histStepNumberNoTimestamp = "Step 5: Exposure"
+    local histStepNumberRightNoTimestamp = "Exposure - Step 5"
+    local histDefault = "Step 5: Exposure (10/12/22 10:45:01 AM)"
+    local histDefaultNoStepNumber = "Exposure (10/12/22 10:45:01 AM)"
+    local histDefaultStepNumberRight = "Exposure (10/12/22 10:45:01 AM) - Step 5"
+
+    local histTimestampLeftStepNumberRight = "(10/12/22 10:45:01 AM) Exposure - Step 5"
+    local histTimestampLeftNoStepNumber = "(10/12/22 10:45:01 AM) Exposure"
+    local histTimestampLeft = "(10/12/22 10:45:01 AM) Step 5: Exposure "
+
+    local histDualTimestamps = "Step 1: Import (10/12/22 4:45:01 AM) (10/12/22 10:45:01 AM)"
+    local histDualTimestampsStepNumberRight = "Import (10/12/22 4:45:01 AM) (10/12/22 10:45:01 AM) - Step 1"
+    local histDualTimestampsLeft = "(10/12/22 10:45:01 AM) (10/12/22 4:45:01 AM) Step 1: Import "
+    local histDualTimestampsLeftStepNumberRight = "(10/12/22 10:45:01 AM) (10/12/22 4:45:01 AM) Import  - Step 1"
+    local histDualTimestampsLeftNoStepNumber = "(10/12/22 10:45:01 AM) (10/12/22 4:45:01 AM) Import "
+    local histDualTimestampsRightNoStepNumber = "Import (10/12/22 4:45:01 AM) (10/12/22 10:45:01 AM)"
+         
+    --[[if prefs.checkForUpdate then
+        -- begin AsyncTask for update check and wait
+        LrTasks.startAsyncTask( function()
+
+                _G.updateAvailable = nil
+
+                PluginManager.checkUpdateAvailable()
+
+                propertyTable.updateCheckInProgress = true
+
+                local timeWaited = waitForGlobal('updateCheckComplete')
+
+
+                propertyTable.updateCheckInProgress = _G.updateCheckInProgress
+                propertyTable.updateLabelText = _G.updateAvailableText
+
+                if _G.updateAvailable then
+                    propertyTable.updateButtonText = "View  Update"
+                    propertyTable.synopsisText = "Update Available"
+                end
+
             end
-            
-        end
-    )
+        )
+    end -- if check for update enabled]]
 
     -- return table to Lightroom Plugin Manager for sections for top of dialog
     return {
-            -- Section for the top of the dialog.
-            {
-                title = "Develop History Timestamps",
+            
+            { -- Section for PLUGIN ABOUT ======================================================
+            
+                title = "About Develop History Timestamps",
                 viewFactory:row {
                         spacing = viewFactory:control_spacing(),
                         viewFactory:static_text {
@@ -106,45 +137,263 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
                         }, -- button
                 }, -- row
             }, -- section
-			{
-				title = "Plugin Help",
+            
+            { -- Section for PLUGIN OPTIONS ================================================
+            
+                title = "Plug-in Options",
+                bind_to_object = prefs, --bind to user plugin preferences
+                viewFactory:row {
+                        viewFactory:static_text {
+                            title = "Step Preview:",
+                            width = 85,
+                            font = "<system/small/bold>"
+                        }, -- text
+                        viewFactory:static_text {
+--                            bind_to_object = propertyTable,
+                            fill_horizontal = 0.7,
+                            alignment = "center",
+                            title = LrView.bind {
+                                keys = { 'showStepNumbers', 'showTimestamps', 'showTimestampsLeft', 'showStepNumbersRight', 'showDualTimestamps' }, -- bind to both keys
+                                bind_to_object = prefs,
+                                operation = function( binder, options, fromTable )
+                                    if not options.showTimestamps then
+                                        if options.showStepNumbers then
+                                            if options.showStepNumbersRight then
+                                                return histStepNumberRightNoTimestamp
+                                            else 
+                                                return histStepNumberNoTimestamp
+                                            end
+                                        else
+                                            return histNoStepNumberNoTimestamp
+                                        end
+                                    else --if showing timestamps
+                                        if options.showDualTimestamps then
+                                            if options.showTimestampsLeft then
+                                                if options.showStepNumbers then
+                                                    if options.showStepNumbersRight then
+                                                        return histDualTimestampsLeftStepNumberRight
+                                                    else -- step numbers left
+                                                        return histDualTimestampsLeft
+                                                    end
+                                                else --no step numbers 
+                                                    return histDualTimestampsLeftNoStepNumber
+                                                end
+                                            else -- show timestamps right
+                                                if options.showStepNumbers then
+                                                    if options.showStepNumbersRight then
+                                                        return histDualTimestampsStepNumberRight
+                                                    else -- step numbers left
+                                                        return histDualTimestamps
+                                                    end
+                                                else --no step numbers 
+                                                    return histDualTimestampsRightNoStepNumber
+                                                end
+                                            end -- if timestamps left
+                                        else -- not dual
+                                            if options.showStepNumbers then
+                                                if options.showStepNumbersRight then
+                                                    if options.showTimestampsLeft then
+                                                        return histTimestampLeftStepNumberRight
+                                                    else
+                                                        return histDefaultStepNumberRight
+                                                    end
+                                                else -- step numbers left
+                                                    if options.showTimestampsLeft then
+                                                        return histTimestampLeft
+                                                    else
+                                                        return histDefault
+                                                    end
+                                                end
+                                            else --no step numbers 
+                                                if options.showTimestampsLeft then
+                                                    return histTimestampLeftNoStepNumber
+                                                else
+                                                    return histDefaultNoStepNumber
+                                                end
+                                            end -- if step numbers
+                                        end -- if dual timestamps
+                                    end -- 
+                                    
+                                    
+                                end,
+                            }, -- title
+                        }, -- static_text
+                    }, -- row
+                viewFactory:row {
+                        viewFactory:checkbox {
+                            title = "Show Timestamps",
+                            value = bind "showTimestamps",
+                            fill_horizontal = 1,
+                        },
+                        viewFactory:push_button {
+                            width = 150,
+                            title = "Reset Do Not Show Dialogs",
+                            enabled = true,
+                            action = function()
+                                dialog.resetDoNotShowFlag()
+                                dialog.message('The "Do not show" dialogs have been reset')
+                            end,
+                        }, -- button
+                }, -- row  
+                viewFactory:row {
+                        viewFactory:checkbox {
+                            title = "Show Dual Timestamps",
+                            enabled = bind "showTimestamps",
+                            value = bind "showDualTimestamps",
+                        },
+                        viewFactory:column { 
+                            fill_vertical =  1,
+                            viewFactory:static_text {
+                                place_vertical = 0.5,
+                                title = "Learn more",
+    --                            font = "<system/bold>",
+                                size = "mini",
+                                mouse_down = function()
+                                    dialog.message("Enabling this option will show the additional timestamp for steps like Export, Import, Print and Edited in App, alongside the regular timestamp of the step.", "By default, the plugin doesn't display timestamps for the steps mentioned above, since these steps have dates baked into the step name, based on the local time of the step's occurence. Displaying the additional timestamp may reveal whether a certain step was performed in a different timezone than the one you're currently in. This can be common for those who travel often between timezones with their Lightroom catalog.")
+                                        end,
+                            } -- static_text learn more
+                        } -- column
+                }, -- row
+                viewFactory:row {
+                        viewFactory:checkbox {
+                            title = "Show Timestamps at beginning of step name",
+                            enabled = bind "showTimestamps",
+                            value = bind "showTimestampsLeft"
+                        },
+                }, -- row
+                viewFactory:row {
+                        viewFactory:checkbox {
+                            title = "Show step numbers",
+                            value = bind "showStepNumbers",
+                            fill_horizontal = 1,
+                        },
+                }, -- row 
+                viewFactory:row {
+                        spacing = viewFactory:control_spacing(),
+                        viewFactory:checkbox {
+                            enabled = bind "showStepNumbers",
+                            title = "Show step numbers after the step name",
+                            value = bind "showStepNumbersRight",
+                            fill_horizontal = 1,
+                        },
+                        viewFactory:column { 
+                            viewFactory:push_button {
+                                width = 150,
+                                title = "Reset Plugin Options",
+                                action = function()
+                                    PluginManager.resetPluginOptions()
+                                end,
+                            }, -- button
+                        } -- column
+                
+                }, -- row
+                viewFactory:row {
+                        viewFactory:checkbox {
+                            title = "Show Photo ID",
+                            value = bind "showPhotoID",
+                        },
+                        viewFactory:column { 
+                            fill_vertical =  1,
+                            viewFactory:static_text {
+                                place_vertical = 0.5,
+                                title = "Learn more",
+                                size = "mini",
+                                mouse_down = function()
+                                    dialog.message("Enabling this option will show the photo local identifier at the beginning of each history step.", "This can be helpful in confirming that the listed steps do indeed belong to the same photo.")
+                                end,
+                            }, -- static_text learn more
+--                            viewFactory:spacer {
+--                                height = 1,
+--                            }
+                        } -- column
+                }, -- row 
+            }, -- section plugin options
+            
+			{ -- section PLUGIN UPDATE ======================================================
+            
+			title = "Plug-in Update",
+                
                 bind_to_object = propertyTable,
                 synopsis = bind 'synopsisText',
                 viewFactory:row {
+                    bind_to_object = prefs,
+                    viewFactory:checkbox {
+                        title = "Check for update automatically",
+                        value = bind "checkForUpdate",
+                        enabled = LrView.bind {
+                            key = "checkForUpdate",
+                            transform = function (enabled, fromTable)
+                                if enabled then
+                                LrTasks.startAsyncTask( function()
+
+                                        _G.updateAvailable = nil
+
+                                        PluginManager.checkUpdateAvailable()
+
+                                        propertyTable.updateCheckInProgress = true
+
+                                        local timeWaited = waitForGlobal('updateCheckComplete')
+
+
+                                        propertyTable.updateCheckInProgress = _G.updateCheckInProgress
+                                        propertyTable.updateLabelText = prefs.updateLastCheck
+
+                                        if _G.updateAvailable then
+                                            propertyTable.updateButtonText = "View  Update"
+                                            propertyTable.synopsisText = "Update Available"
+                                        end
+
+                                    end
+                                )
+                                else 
+                                    propertyTable.updateLabelText = prefs.updateLastCheck
+                                end -- if enabled
+                                return true
+                            end,
+                    }
+                    },
+                    viewFactory:column { 
+                        fill_vertical =  1,
+                        viewFactory:static_text {
+                            place_vertical = 0.5,
+                            title = "Learn more",
+                            size = "mini",
+                            mouse_down = function()
+                                dialog.message("When enabled, the plugin will check for an update automatically whenever the plugin is selected in the Plugin Manager.", "It is recommended to leave this enabled.")
+                            end,
+                        }, -- static_text learn more
+                        --                            viewFactory:spacer {
+                        --                                height = 1,
+                        --                            }
+                    } -- column
+                }, -- row 
+                viewFactory:row {
                         spacing = viewFactory:control_spacing(),
                         viewFactory:static_text {
-                            title = bind 'updateAvailableText',
-                            font = bind 'updateButtonStyle',
+                            title = LrView.bind {
+                                keys = { 'updateCheckInProgress', 'updateLabelText', "updateButtonEnabled"},
+                                operation = function( binder, binding, fromTable )
+                                    if binding.updateCheckInProgress then
+                                        binding.updateButtonEnabled = false
+                                        return "Checking for plugin updates..."
+                                    else 
+                                        binding.updateButtonEnabled = true
+                                        return binding.updateLabelText
+                                    end
+                                end,
+                            },
                             fill_horizontal = 1,
                         }, -- text
 
                         viewFactory:push_button {
                             width = 150,
                             title = bind 'updateButtonText',
-                            enabled = true,
+                            enabled = bind "updateButtonEnabled",
                             action = function()
                                 PluginManager.checkUpdate()
                             end
                         }, -- button
                 }, -- row  
-				viewFactory:row {
-					spacing = viewFactory:control_spacing(),
-
-					viewFactory:static_text {
-						title = "Reset dialogs with 'Do not show' option",
-						fill_horizontal = 1,
-					}, -- text
-
-					viewFactory:push_button {
-						width = 150,
-						title = "Reset Do Not Show Dialogs",
-						enabled = true,
-						action = function()
-							dialog.resetDoNotShowFlag()
-                            dialog.message('The "Do not show" dialogs have been reset')
-						end,
-					}, -- button
-				}, -- row
                 viewFactory:row {
                     spacing = viewFactory:control_spacing(),
 
@@ -175,11 +424,12 @@ function PluginManager.checkUpdateAvailable(override)
         }
     
     _G.updateAvailable = nil
-    _G.updateCheck = nil
+    _G.updateCheckComplete = nil
     
      -- begin AsyncTask
     LrTasks.startAsyncTask( function()
 
+            
             local response, data = LrHttp.get( checkURL, headers, 10 )
 
             local updateCheckTime = os.date("%B %d, %Y %I\:%M\:%S %p")
@@ -200,15 +450,18 @@ function PluginManager.checkUpdateAvailable(override)
                 _G.updateAvailable = true
                 _G.updateVersion = response.tag_name
                 _G.updateDate = os.date("%B %d, %Y",fromISODate(response.published_at))
-                _G.updateAvailableText = "Update available: " .. updateVersion .. "  Released: " .. updateDate
+--                _G.updateCheckText = "Update available: " .. updateVersion .. "  Released: " .. updateDate
+                prefs.updateLastCheck = "Update available: " .. updateVersion .. "  Released: " .. updateDate
                 _G.updateDetails = response
-            else 
-                _G.updateAvailableText = "Plugin is up to date. Last checked: " .. updateCheckTime
+            else -- no new update available
+                _G.updateCheckText = "Plugin is up to date." 
+                prefs.updateLastCheck = "Last check: " .. updateCheckTime
                 _G.updateAvailable = false
             end
             
             -- signal completion of check
-            _G.updateCheck = true
+            _G.updateCheckInProgress = false
+            _G.updateCheckComplete = true
         end
     )
         
@@ -233,7 +486,7 @@ function PluginManager.checkUpdate (override) --override bool parameter used to 
                 PluginManager.checkUpdateAvailable()
             end
         
-            local updateTimeWaited = waitForGlobal('updateCheck')
+            local updateTimeWaited = waitForGlobal('updateCheckComplete')
             
             dialog.showBezel("Checking for update...")
 
@@ -366,7 +619,7 @@ function PluginManager.checkUpdate (override) --override bool parameter used to 
 
 end -- checkUpdate()
 
-function PluginManager.downloadUpdate (url)
+function PluginManager.downloadUpdate(url)
 
 --        local downloadPath = paths.getStandardFilePath("temp")
     
@@ -379,8 +632,6 @@ function PluginManager.downloadUpdate (url)
         local download, code = LrHttp.get(url)
 
         local status = code["status"] --returned by get request
-    
---        code["status"] = nil -- unset from table for easier looping
     
         local filename = ""
         local folderName = ""
@@ -399,3 +650,25 @@ function PluginManager.downloadUpdate (url)
 
         return saveFileName
 end
+
+function PluginManager.resetPluginOptions() 
+
+    -- prompt for confirmation
+    local confirm = dialog.confirm("Are you sure you want to reset the plugin options to their default settings?")
+
+    if confirm == "ok" then
+
+        -- loop through the table containing the default values and set the plugin preferences accordingly
+        for prefKey,value in pairs(_G.prefKeys) do
+            prefs[prefKey] = value
+        end
+        
+        dialog.showBezel('The plugin options have been reset.')
+        
+        return true
+        
+    else 
+        return false
+    end
+    
+end -- resetPluginOptions()
