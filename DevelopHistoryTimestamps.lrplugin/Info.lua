@@ -50,7 +50,6 @@ return {
     
     LrEnablePlugin = 'PluginEnable.lua',
 
---	VERSION = { major=1, minor=0, revision=0, },
-	VERSION = { major=0, minor=9, revision=9, },
+	VERSION = { major=1, minor=0, revision=0, },
 
 }

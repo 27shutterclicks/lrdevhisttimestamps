@@ -29,8 +29,15 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
 
 
     -- set initial plugin update text
-    propertyTable.updateLabelText = _G.updateCheckText .. prefs.updateLastCheck
-    propertyTable.updateButtonText = "Check for update"
+    propertyTable.updateLabelText = prefs.updateLastCheck
+    
+    -- set update button text
+    if prefs.updateAvailable then
+        propertyTable.updateButtonText = "View Update"
+    else 
+        propertyTable.updateButtonText = "Check for update"
+    end
+    
     propertyTable.updateButtonEnabled = true
 --    propertyTable.checkForUpdate = prefs.checkForUpdate
     
@@ -53,31 +60,6 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
     local histDualTimestampsLeftNoStepNumber = "(10/12/22 10:45:01 AM) (10/12/22 4:45:01 AM) Import "
     local histDualTimestampsRightNoStepNumber = "Import (10/12/22 4:45:01 AM) (10/12/22 10:45:01 AM)"
          
-    --[[if prefs.checkForUpdate then
-        -- begin AsyncTask for update check and wait
-        LrTasks.startAsyncTask( function()
-
-                _G.updateAvailable = nil
-
-                PluginManager.checkUpdateAvailable()
-
-                propertyTable.updateCheckInProgress = true
-
-                local timeWaited = waitForGlobal('updateCheckComplete')
-
-
-                propertyTable.updateCheckInProgress = _G.updateCheckInProgress
-                propertyTable.updateLabelText = _G.updateAvailableText
-
-                if _G.updateAvailable then
-                    propertyTable.updateButtonText = "View  Update"
-                    propertyTable.synopsisText = "Update Available"
-                end
-
-            end
-        )
-    end -- if check for update enabled]]
-
     -- return table to Lightroom Plugin Manager for sections for top of dialog
     return {
             
@@ -301,10 +283,7 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
                                 mouse_down = function()
                                     dialog.message("Enabling this option will show the photo local identifier at the beginning of each history step.", "This can be helpful in confirming that the listed steps do indeed belong to the same photo.")
                                 end,
-                            }, -- static_text learn more
---                            viewFactory:spacer {
---                                height = 1,
---                            }
+                            },
                         } -- column
                 }, -- row 
             }, -- section plugin options
@@ -326,7 +305,7 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
                                 if enabled then
                                 LrTasks.startAsyncTask( function()
 
-                                        _G.updateAvailable = nil
+--                                        _G.updateAvailable = nil
 
                                         PluginManager.checkUpdateAvailable()
 
@@ -338,7 +317,7 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
                                         propertyTable.updateCheckInProgress = _G.updateCheckInProgress
                                         propertyTable.updateLabelText = prefs.updateLastCheck
 
-                                        if _G.updateAvailable then
+                                        if prefs.updateAvailable then
                                             propertyTable.updateButtonText = "View  Update"
                                             propertyTable.synopsisText = "Update Available"
                                         end
@@ -361,10 +340,7 @@ function PluginManager.sectionsForTopOfDialog( viewFactory , propertyTable )
                             mouse_down = function()
                                 dialog.message("When enabled, the plugin will check for an update automatically whenever the plugin is selected in the Plugin Manager.", "It is recommended to leave this enabled.")
                             end,
-                        }, -- static_text learn more
-                        --                            viewFactory:spacer {
-                        --                                height = 1,
-                        --                            }
+                        },
                     } -- column
                 }, -- row 
                 viewFactory:row {
@@ -447,7 +423,7 @@ function PluginManager.checkUpdateAvailable(override)
 
             -- compare local version number with update version number
             if (pluginUpdateVersion > pluginVersion) or (override) then
-                _G.updateAvailable = true
+                prefs.updateAvailable = true
                 _G.updateVersion = response.tag_name
                 _G.updateDate = os.date("%B %d, %Y",fromISODate(response.published_at))
 --                _G.updateCheckText = "Update available: " .. updateVersion .. "  Released: " .. updateDate
@@ -456,7 +432,7 @@ function PluginManager.checkUpdateAvailable(override)
             else -- no new update available
                 _G.updateCheckText = "Plugin is up to date." 
                 prefs.updateLastCheck = "Last check: " .. updateCheckTime
-                _G.updateAvailable = false
+                prefs.updateAvailable = false
             end
             
             -- signal completion of check
@@ -493,7 +469,7 @@ function PluginManager.checkUpdate (override) --override bool parameter used to 
             LrTasks.sleep(2)
             
             -- if no update, display message
-            if (not _G.updateAvailable) and (not override) then
+            if (not prefs.updateAvailable) and (not override) then
                 return nil, dialog.message("You are using the latest version of the plugin", "Keep on inspecting timestamps!")
             end
             
@@ -582,7 +558,11 @@ function PluginManager.checkUpdate (override) --override bool parameter used to 
                 if not deleteDownload then
                     dialog.showError("The update archive could not be deleted")
                 end
-                    
+                
+                -- reset update available flag
+                prefs.updateAvailable = false
+                prefs.updateLastCheck = "Check for plugin update"
+                
                 dialog.showBezel('Updated. Click "Reload Plug-in" button in Plugin Manager')
                 dialog.message("Plugin updated", 'Please click the "Reload Plug-in" button in the Plugin Manager window to start using the new version.')
 
