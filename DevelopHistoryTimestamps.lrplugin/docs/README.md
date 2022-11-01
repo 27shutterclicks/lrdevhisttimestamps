@@ -6,7 +6,7 @@ An Adobe Lightroom Classic plugin that queries the Lightroom catalog (.lrcat fil
 
 
 - [Introduction](#introduction)
-- [Disclaimer](#warning-and-a-little-disclaimer)
+- [Download](#download)
 - [Installation](#installation)
 - [Usage & Features](#usage--features)
 - [Known Issues](#known-issues)
@@ -22,9 +22,13 @@ For metadata changes, Lightroom maintains a separate counter that gets increased
 A discussion on this topic and the need for seeing the timestamps exists in the Adobe Community forums: [Timestamp in LR history for every command](https://community.adobe.com/t5/lightroom-ecosystem-cloud-based-discussions/timestamp-in-lr-history-for-every-command/td-p/11500328).
 
 
+## Download
+
+You may download the latest commit above as a zip file or [get the latest release](https://github.com/27shutterclicks/lrdevhisttimestamps/releases/latest).
+
 ## Installation
 
-- Download the [latest release](https://github.com/27shutterclicks/lrdevhisttimestamps/releases/tag/v0.9.9) zip archive from Github and extract to a folder of your choice.
+- Download the [latest release](https://github.com/27shutterclicks/lrdevhisttimestamps/releases/latest) zip archive from Github and extract to a folder of your choice.
 - Copy the entire *DevelopHistoryTimestamps.lrplugin* folder to wherever you store your Lightroom plugins. A good location is  in a "*Lightroom Plugins*" folder where the Lightroom catalog file is located. 
 - In Ligthroom, go to *File > Plug-in Manager* and click **Add**.
 - Select the *DevelopHistoryTimestamps.lrplugin* folder u copied, then click **Select Folder** button.
