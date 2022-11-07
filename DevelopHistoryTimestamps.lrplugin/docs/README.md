@@ -13,13 +13,22 @@ An Adobe Lightroom Classic plugin that queries the Lightroom catalog (.lrcat fil
 
 ## Introduction
 
-Lightroom Classic maintains timestamps for every develop history step and a separate counter and timestamp for all other metadata changes, but this information is mostly hidden and inaccessible to the user.
+Ever wished you could see when a certain develop history step was performed on a photo? It is now possible using this plugin for Lightroom Classic.
 
-For Develop History steps, every step has a timestamp associated with it in the catalog/database, but timestamps are only displayed in the History panel for specific steps or actions: Import, Export, Print and Edited in external app, like Photoshop.
+Example uses:
 
-For metadata changes, Lightroom maintains a separate counter that gets increased and timestamped with any changes in an image's metadata (flag status, star rating, color label, keywords, etc.), including any develop module changes. This counter is used when sorting images by "Edit Time", but there is no way to see the associated date/time information anywhere. So you can know which image was last edited, but not WHEN.
+- Distinguish older develop edits from most recent ones (e.g.: when making changes to an older edited image and wanting to revert to how it was before making the recent edits).
+- Establish the order of edits among multiple similar images or virtual copies, especially when settings are copied/pasted from one copy to another.
+- Distinguish between latest metadata changes and latest develop edits.
+- Identify develop edits made in a different timezone.
 
-A discussion on this topic and the need for seeing the timestamps exists in the Adobe Community forums: [Timestamp in LR history for every command](https://community.adobe.com/t5/lightroom-ecosystem-cloud-based-discussions/timestamp-in-lr-history-for-every-command/td-p/11500328).
+Lightroom Classic maintains timestamps for every develop history step, as well as a separate counter and timestamp for all other metadata changes. Strangely, this information is hidden and inaccessible to the user.
+
+For Develop History steps, each step has a timestamp associated with it in the catalog, but these timestamps are only displayed in the History panel for specific steps or actions: Import, Export, Print and Edited in external app (like Photoshop). All other steps do not show a timestamp ever.
+
+For metadata changes (flagging, rating, keywording, etc.), Lightroom maintains a separate counter that gets increased and timestamped with any changes in an image's metadata, including any develop module changes. This counter is used when sorting images by "Edit Time", but there is no way to see the actual date/time information anywhere. So you can know which image was last edited, but not WHEN. This plugin's View Last Edit time feature addresses that.
+
+A discussion on the need for seeing the timestamps exists in the Adobe Community forums: [Timestamp in LR history for every command](https://community.adobe.com/t5/lightroom-ecosystem-cloud-based-discussions/timestamp-in-lr-history-for-every-command/td-p/11500328).
 
 
 ## Download
