@@ -57,7 +57,7 @@ function getFromDB(sql, progressScopeMsg, progressDialogTitle, progressDialogMsg
     -- .\sqlite3.exe "E:\Pictures\Lightroom Catalog\My Catalog.lrcat" "SELECT name,dateCreated FROM main.Adobe_libraryImageDevelopHistoryStep WHERE image = '45099944';" > sql.txt
     
     -- assemble shell command (see example above)
-    cmd = cmdStart .. '"' .. catalog:getPath() .. '" "' .. sql .. '"'
+    cmd = cmdStart .. '"file:' .. catalog:getPath() .. '?mode=ro" "' .. sql .. '"'
     cmd = cmd .. " > " .. outputFile .. cmdEnd
     
     -- begin AsyncTask

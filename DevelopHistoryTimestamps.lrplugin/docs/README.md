@@ -11,7 +11,7 @@ An Adobe Lightroom Classic plugin that queries the Lightroom catalog (.lrcat fil
 - [Usage & Features](#usage--features)
 - [Known Issues](#known-issues)
 
-## Introduction
+## Introductionl
 
 Ever wished you could see when a certain develop history step was performed on a photo? It is now possible using this plugin for Lightroom Classic.
 
